@@ -8,7 +8,9 @@
     "Music & Audio",
     "Utilities",
     "Games & Fun",
-    "Travel & Food"
+    "Travel & Food",
+    "Education",
+    "Lifestyle"
   ],
   "apps": [
     {
@@ -154,6 +156,78 @@
       "tags": ["low-bandwidth", "case-study"],
       "added": "2026-07-10",
       "submittedBy": "pwaverse"
+    },
+    {
+      "id": "kina-wige",
+      "name": "Kina-Wige",
+      "url": "https://kina-wige.vercel.app",
+      "description": "A playful game that teaches young children to read and count in Kinyarwanda — learning that feels like play, made in Rwanda.",
+      "category": "Education",
+      "iconLetter": "K",
+      "iconColor": "#f59e0b",
+      "tags": ["offline", "kids", "made-in-rwanda"],
+      "added": "2026-07-10",
+      "submittedBy": "Gacaca6"
+    },
+    {
+      "id": "wayfind",
+      "name": "Wayfind",
+      "url": "https://wayfind-app-xi.vercel.app",
+      "description": "Scripture for the searching heart — find Bible verses by how you feel and keep them with you, even offline.",
+      "category": "Lifestyle",
+      "iconLetter": "W",
+      "iconColor": "#0e7490",
+      "tags": ["offline", "faith"],
+      "added": "2026-07-10",
+      "submittedBy": "Gacaca6"
+    },
+    {
+      "id": "musi-me",
+      "name": "MusiMe",
+      "url": "https://musi-me.vercel.app",
+      "description": "An iPhone-friendly music player that saves your songs for fully offline playback — proof that PWAs can do offline media on iOS.",
+      "category": "Music & Audio",
+      "iconLetter": "M",
+      "iconColor": "#e11d48",
+      "tags": ["offline", "ios-friendly", "media"],
+      "added": "2026-07-10",
+      "submittedBy": "Gacaca6"
+    },
+    {
+      "id": "hano-bus",
+      "name": "Hano Bus",
+      "url": "https://hanobusapp.vercel.app",
+      "description": "Real-time bus tracking for commuters in Kigali — see where your bus is and when it arrives, even on patchy connections.",
+      "category": "Travel & Food",
+      "iconLetter": "H",
+      "iconColor": "#16a34a",
+      "tags": ["realtime", "low-bandwidth", "made-in-rwanda"],
+      "added": "2026-07-10",
+      "submittedBy": "Gacaca6"
+    },
+    {
+      "id": "poetry-assistant",
+      "name": "Poetry Assistant",
+      "url": "https://poetryassistant.vercel.app",
+      "description": "AI-assisted poetry writing with rhyme and syllable guidance — draft, refine, and polish poems right in your browser.",
+      "category": "Design & Creativity",
+      "iconLetter": "P",
+      "iconColor": "#7c3aed",
+      "tags": ["ai", "writing"],
+      "added": "2026-07-10",
+      "submittedBy": "Gacaca6"
+    },
+    {
+      "id": "tweetforge",
+      "name": "TweetForge",
+      "url": "https://tweetforge-delta.vercel.app",
+      "description": "An AI-assisted workshop for crafting engaging tweets — drafts, hooks, and variations in seconds.",
+      "category": "Productivity",
+      "iconLetter": "T",
+      "iconColor": "#0ea5e9",
+      "tags": ["ai", "writing", "social-media"],
+      "added": "2026-07-10",
+      "submittedBy": "Gacaca6"
     }
   ]
 }

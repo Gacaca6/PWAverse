@@ -45,6 +45,8 @@ body:
         - Utilities
         - Games & Fun
         - Travel & Food
+        - Education
+        - Lifestyle
     validations:
       required: true
   - type: input
