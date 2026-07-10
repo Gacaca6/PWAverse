@@ -1,31 +1,59 @@
+// @ts-check
 /* ---------------------------------------------------------------------------
    PWAverse — app logic
-   Plain JavaScript, no dependencies. Loads the community app list from
-   data/apps.json, renders the directory, and handles search, filtering,
-   the detail dialog, and PWA installation.
+   Plain JavaScript, no dependencies, no build step. Type-checked in-editor
+   via `// @ts-check` + JSDoc (TypeScript's checker runs on this file as-is).
+   Loads the community app list from data/apps.json and handles search,
+   filtering, the detail dialog, and PWA installation.
 --------------------------------------------------------------------------- */
+
+/**
+ * One entry in data/apps.json — field rules live in data/apps.schema.json.
+ * @typedef {Object} App
+ * @property {string} id
+ * @property {string} name
+ * @property {string} url
+ * @property {string} description
+ * @property {string} category
+ * @property {string} iconLetter
+ * @property {string} iconColor
+ * @property {string[]} tags
+ * @property {string} added
+ * @property {string} submittedBy
+ */
+
+/**
+ * Chrome's install event (not yet in the standard TS DOM lib).
+ * @typedef {Event & {
+ *   prompt: () => Promise<void>,
+ *   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+ * }} BeforeInstallPromptEvent
+ */
 
 const GITHUB_REPO_URL = 'https://github.com/Gacaca6/PWAverse';
 const SUBMIT_APP_URL = `${GITHUB_REPO_URL}/issues/new?template=submit-app.yml`;
 
 const state = {
+  /** @type {App[]} */
   apps: [],
+  /** @type {string[]} */
   categories: [],
   query: '',
+  /** @type {string | null} */
   category: null,
 };
 
 const els = {
-  grid: document.getElementById('app-grid'),
-  chips: document.getElementById('category-chips'),
-  search: document.getElementById('search'),
-  count: document.getElementById('results-count'),
-  empty: document.getElementById('empty-state'),
-  offlineBadge: document.getElementById('offline-badge'),
-  installBtn: document.getElementById('install-btn'),
-  appDialog: document.getElementById('app-dialog'),
-  dialogBody: document.getElementById('dialog-body'),
-  iosDialog: document.getElementById('ios-dialog'),
+  grid: /** @type {HTMLElement} */ (document.getElementById('app-grid')),
+  chips: /** @type {HTMLElement} */ (document.getElementById('category-chips')),
+  search: /** @type {HTMLInputElement} */ (document.getElementById('search')),
+  count: /** @type {HTMLElement} */ (document.getElementById('results-count')),
+  empty: /** @type {HTMLElement} */ (document.getElementById('empty-state')),
+  offlineBadge: /** @type {HTMLElement} */ (document.getElementById('offline-badge')),
+  installBtn: /** @type {HTMLButtonElement} */ (document.getElementById('install-btn')),
+  appDialog: /** @type {HTMLDialogElement} */ (document.getElementById('app-dialog')),
+  dialogBody: /** @type {HTMLElement} */ (document.getElementById('dialog-body')),
+  iosDialog: /** @type {HTMLDialogElement} */ (document.getElementById('ios-dialog')),
 };
 
 /* --- Data loading ---------------------------------------------------- */
@@ -33,7 +61,7 @@ const els = {
 async function loadApps() {
   try {
     const res = await fetch('data/apps.json');
-    const data = await res.json();
+    const data = /** @type {{ categories: string[], apps: App[] }} */ (await res.json());
     state.apps = data.apps;
     state.categories = data.categories;
     renderChips();
@@ -48,6 +76,7 @@ async function loadApps() {
 
 /* --- Rendering -------------------------------------------------------- */
 
+/** @returns {App[]} */
 function filteredApps() {
   const q = state.query.trim().toLowerCase();
   return state.apps.filter((app) => {
@@ -68,6 +97,10 @@ function renderChips() {
   state.categories.forEach((cat) => els.chips.appendChild(makeChip(cat, cat)));
 }
 
+/**
+ * @param {string} label
+ * @param {string | null} value
+ */
 function makeChip(label, value) {
   const btn = document.createElement('button');
   btn.className = 'chip';
@@ -83,6 +116,10 @@ function makeChip(label, value) {
   return btn;
 }
 
+/**
+ * @param {App} app
+ * @param {string} [extraClass]
+ */
 function appIcon(app, extraClass = '') {
   const icon = document.createElement('span');
   icon.className = `app-icon ${extraClass}`.trim();
@@ -137,6 +174,7 @@ function render() {
 
 /* --- App detail dialog -------------------------------------------------- */
 
+/** @param {App} app */
 function openAppDialog(app) {
   els.dialogBody.innerHTML = '';
 
@@ -185,16 +223,17 @@ els.search.addEventListener('input', () => {
 
 /* --- Install flow (beforeinstallprompt on Android/desktop, manual on iOS) -- */
 
+/** @type {BeforeInstallPromptEvent | null} */
 let deferredInstallPrompt = null;
 
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-  window.navigator.standalone === true;
+  /** @type {{ standalone?: boolean }} */ (window.navigator).standalone === true;
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredInstallPrompt = e;
+  deferredInstallPrompt = /** @type {BeforeInstallPromptEvent} */ (e);
   if (!isStandalone) els.installBtn.hidden = false;
 });
 
@@ -229,8 +268,10 @@ updateOnlineStatus();
 
 /* --- Repo links ------------------------------------------------------------- */
 
-document.getElementById('github-link').href = GITHUB_REPO_URL;
-document.getElementById('submit-link').href = SUBMIT_APP_URL;
+const githubLink = /** @type {HTMLAnchorElement} */ (document.getElementById('github-link'));
+const submitLink = /** @type {HTMLAnchorElement} */ (document.getElementById('submit-link'));
+githubLink.href = GITHUB_REPO_URL;
+submitLink.href = SUBMIT_APP_URL;
 
 /* --- Service worker ----------------------------------------------------------- */
 

@@ -36,6 +36,7 @@ And in the spirit of the mission: **PWAverse is itself a PWA.** Install it, go o
 - 📲 **Installable everywhere** — native install prompt on Android/desktop, guided instructions on iOS
 - 🌗 **Dark & light themes** — follows your system preference
 - ✅ **CI-validated data** — every submission is automatically checked against the [directory schema](data/apps.schema.json)
+- 🧪 **Live PWA checks** — CI visits every submitted app and verifies it's reachable, has a valid manifest, and registers a service worker; the whole directory is re-swept weekly for link rot
 - 🚫 **No tracking, no ads, no build step** — plain HTML, CSS, and JavaScript
 
 ## Add your app to the directory
@@ -64,17 +65,18 @@ python -m http.server 8080
 npx serve .
 ```
 
-Then open `http://localhost:8080`. To check directory data before a PR:
+Then open `http://localhost:8080`. To run the same checks CI runs before opening a PR:
 
 ```bash
-node scripts/validate-apps.mjs
+node scripts/validate-apps.mjs   # directory data rules
+node scripts/check-pwas.mjs      # visit every listed app and verify it's a real PWA
 ```
 
 ## Roadmap
 
 - [x] **v0.1** — Directory: browse, search, filter, launch, install
 - [x] **v0.2** — App submission via GitHub issue form + CI validation of directory data
-- [ ] **v0.3** — Automated PWA checks: validate the *submitted app's* manifest & service worker in CI
+- [x] **v0.3** — Automated PWA checks: CI verifies each submitted app's manifest & service worker, plus a weekly link-rot sweep
 - [ ] **v0.4** — PWA "report card": per-app scores for installability, offline support, and iOS compatibility
 - [ ] **v0.5** — Screenshots and richer app pages
 - [ ] **v1.0** — Community moderation, ratings, and multi-language support
@@ -84,6 +86,7 @@ Ideas welcome — [open an issue](https://github.com/Gacaca6/PWAverse/issues/new
 ## Tech decisions (and why)
 
 - **No framework, no build step.** Anyone who knows basic HTML/CSS/JS can contribute, and the site can be hosted anywhere for free (GitHub Pages, Cloudflare Pages, Netlify).
+- **Typed without compiling.** The JavaScript uses `// @ts-check` + JSDoc, so editors run TypeScript's checker on the plain `.js` files that ship to the browser — type safety with zero toolchain.
 - **Data lives in the repo.** The app list is a JSON file under version control — the community literally owns the data, and every addition is reviewed in the open.
 - **Static-first.** No servers, no databases, no costs that could kill the project later.
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 /**
  * Validates data/apps.json against the directory rules.
  * Zero dependencies — runs with plain Node 18+.
@@ -12,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+/** @type {string[]} */
 const errors = [];
 
 const raw = await readFile(join(root, 'data', 'apps.json'), 'utf8');
@@ -19,7 +21,7 @@ let data;
 try {
   data = JSON.parse(raw);
 } catch (e) {
-  console.error(`✖ data/apps.json is not valid JSON: ${e.message}`);
+  console.error(`✖ data/apps.json is not valid JSON: ${e instanceof Error ? e.message : e}`);
   process.exit(1);
 }
 
@@ -37,10 +39,12 @@ const ID_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** @type {Set<string>} */
 const seenIds = new Set();
 
 for (const app of apps ?? []) {
   const label = app?.id || app?.name || JSON.stringify(app).slice(0, 40);
+  /** @param {string} msg */
   const fail = (msg) => errors.push(`[${label}] ${msg}`);
 
   for (const key of Object.keys(app)) {

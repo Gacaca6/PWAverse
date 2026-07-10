@@ -1,0 +1,28 @@
+name: PWA quality checks
+
+on:
+  pull_request:
+    paths:
+      - "data/apps.json"
+  schedule:
+    # Weekly link-rot sweep of the whole directory, Mondays 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Verify listed apps are real PWAs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check changed apps (pull request)
+        if: github.event_name == 'pull_request'
+        run: node scripts/check-pwas.mjs --diff origin/${{ github.base_ref }}
+      - name: Check all apps (scheduled / manual)
+        if: github.event_name != 'pull_request'
+        run: node scripts/check-pwas.mjs

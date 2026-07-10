@@ -62,7 +62,12 @@ Both big-name apps and small indie projects are welcome. Indie projects are espe
 
 ### Review process
 
-A maintainer will open your app, confirm it loads and behaves like a PWA, and merge. If something's off, we'll comment on the PR — nothing is rejected without a reason.
+Two things happen on your PR:
+
+1. **CI checks your app automatically** — it validates your JSON entry, then visits your app's URL and verifies it's reachable, links a valid web app manifest, and registers a service worker. You can run the same checks locally: `node scripts/check-pwas.mjs --ids your-app-id`
+2. **A maintainer reviews it by hand** — opens the app, confirms it behaves like a PWA, and merges.
+
+Warnings from CI (e.g. a service worker hidden in bundled code) don't block merging — they just tell the maintainer what to double-check. If something's off, we'll comment on the PR — nothing is rejected without a reason.
 
 ## Improving the site
 
