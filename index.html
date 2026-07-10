@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>PWAverse — Discover Progressive Web Apps</title>
+  <meta name="description" content="A community-curated directory of Progressive Web Apps. Discover, launch, and install the best apps of the open web — no app store required." />
+  <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PWAverse" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="PWAverse home">
+        <span class="brand-mark" aria-hidden="true">◍</span>
+        <span class="brand-name">PWAverse</span>
+      </a>
+      <nav class="header-actions">
+        <button id="install-btn" class="btn btn-primary" hidden>Install app</button>
+        <a class="btn btn-ghost" href="https://github.com/" id="github-link" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <p class="hero-eyebrow">Community-curated · Open source</p>
+      <h1>The open web has apps.<br />This is where you find them.</h1>
+      <p class="hero-sub">
+        Progressive Web Apps launch instantly, work offline, and install on any device —
+        no app store gatekeepers. PWAverse is a directory built by the community, for the community.
+      </p>
+      <div class="search-wrap" role="search">
+        <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="Search apps… (e.g. drawing, music, photo editor)" autocomplete="off" aria-label="Search apps" />
+      </div>
+      <div id="category-chips" class="chips" role="group" aria-label="Filter by category"></div>
+    </section>
+
+    <section class="container">
+      <div class="results-meta">
+        <span id="results-count"></span>
+        <span id="offline-badge" class="offline-badge" hidden>⚡ Offline — showing cached apps</span>
+      </div>
+      <div id="app-grid" class="app-grid" aria-live="polite"></div>
+      <p id="empty-state" class="empty-state" hidden>No apps match your search — yet. <a href="#submit">Know one? Add it!</a></p>
+    </section>
+
+    <section id="submit" class="container submit-cta">
+      <h2>Built a PWA? Get it discovered.</h2>
+      <p>
+        Every app here lives in a simple JSON file anyone can edit.
+        Submit yours with a pull request — it takes five minutes and helps the whole ecosystem grow.
+      </p>
+      <a class="btn btn-primary" id="submit-link" href="https://github.com/" target="_blank" rel="noopener">Submit your app →</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p><strong>PWAverse</strong> is open source and community-owned. This site is itself an installable, offline-capable PWA.</p>
+      <p class="footer-fine">MIT licensed · No tracking · Data lives in the repo</p>
+    </div>
+  </footer>
+
+  <!-- App detail dialog -->
+  <dialog id="app-dialog" class="app-dialog" aria-labelledby="dialog-title">
+    <form method="dialog" class="dialog-close-form">
+      <button class="dialog-close" aria-label="Close">✕</button>
+    </form>
+    <div id="dialog-body"></div>
+  </dialog>
+
+  <!-- iOS install instructions dialog -->
+  <dialog id="ios-dialog" class="app-dialog" aria-labelledby="ios-title">
+    <form method="dialog" class="dialog-close-form">
+      <button class="dialog-close" aria-label="Close">✕</button>
+    </form>
+    <h2 id="ios-title">Install on iPhone / iPad</h2>
+    <ol class="ios-steps">
+      <li>Open this page in <strong>Safari</strong></li>
+      <li>Tap the <strong>Share</strong> button <span aria-hidden="true">(the square with an arrow)</span></li>
+      <li>Scroll down and tap <strong>“Add to Home Screen”</strong></li>
+      <li>Tap <strong>Add</strong> — PWAverse appears on your home screen like any app</li>
+    </ol>
+  </dialog>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

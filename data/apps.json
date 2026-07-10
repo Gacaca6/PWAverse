@@ -1,0 +1,159 @@
+{
+  "$schema": "./apps.schema.json",
+  "categories": [
+    "Productivity",
+    "Design & Creativity",
+    "Developer Tools",
+    "Social",
+    "Music & Audio",
+    "Utilities",
+    "Games & Fun",
+    "Travel & Food"
+  ],
+  "apps": [
+    {
+      "id": "excalidraw",
+      "name": "Excalidraw",
+      "url": "https://excalidraw.com",
+      "description": "A virtual whiteboard for sketching hand-drawn diagrams. Fully offline-capable, collaborative, and open source.",
+      "category": "Design & Creativity",
+      "iconLetter": "E",
+      "iconColor": "#6965db",
+      "tags": ["offline", "open-source", "collaboration"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "photopea",
+      "name": "Photopea",
+      "url": "https://www.photopea.com",
+      "description": "A full-featured photo editor in the browser. Opens PSD, XCF, Sketch and RAW files — a serious Photoshop alternative.",
+      "category": "Design & Creativity",
+      "iconLetter": "P",
+      "iconColor": "#18a497",
+      "tags": ["offline", "pro-tools"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "squoosh",
+      "name": "Squoosh",
+      "url": "https://squoosh.app",
+      "description": "Compress and compare images with different codecs, right in your browser. Built by the Chrome team as a PWA showcase.",
+      "category": "Utilities",
+      "iconLetter": "S",
+      "iconColor": "#ff3385",
+      "tags": ["offline", "open-source", "privacy"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "svgomg",
+      "name": "SVGOMG",
+      "url": "https://jakearchibald.github.io/svgomg/",
+      "description": "The missing GUI for SVGO — optimize SVG files with live preview. A tiny, perfect example of what a PWA can be.",
+      "category": "Developer Tools",
+      "iconLetter": "V",
+      "iconColor": "#0097a7",
+      "tags": ["offline", "open-source"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "vscode-dev",
+      "name": "VS Code for the Web",
+      "url": "https://vscode.dev",
+      "description": "Visual Studio Code running entirely in your browser. Open local folders with the File System Access API — no install needed.",
+      "category": "Developer Tools",
+      "iconLetter": "⌘",
+      "iconColor": "#0078d4",
+      "tags": ["file-system-access", "pro-tools"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "monkeytype",
+      "name": "Monkeytype",
+      "url": "https://monkeytype.com",
+      "description": "A minimalist, customizable typing test. Track your speed and accuracy with beautiful themes and detailed stats.",
+      "category": "Games & Fun",
+      "iconLetter": "M",
+      "iconColor": "#e2b714",
+      "tags": ["open-source", "keyboard-first"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "pinterest",
+      "name": "Pinterest",
+      "url": "https://www.pinterest.com",
+      "description": "Visual discovery engine for ideas. One of the most cited PWA success stories — engagement rose 60% after their PWA rebuild.",
+      "category": "Social",
+      "iconLetter": "P",
+      "iconColor": "#e60023",
+      "tags": ["install-prompt", "case-study"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "x-twitter",
+      "name": "X (Twitter)",
+      "url": "https://x.com",
+      "description": "The X social network as a lightweight installable app — push notifications, offline timelines, and a fraction of the native app's size.",
+      "category": "Social",
+      "iconLetter": "X",
+      "iconColor": "#1a1a1a",
+      "tags": ["push-notifications", "case-study"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "spotify-web",
+      "name": "Spotify Web Player",
+      "url": "https://open.spotify.com",
+      "description": "Stream Spotify's full catalog from an installable web player with media-key and lock-screen controls.",
+      "category": "Music & Audio",
+      "iconLetter": "S",
+      "iconColor": "#1db954",
+      "tags": ["media-controls"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "telegram-web",
+      "name": "Telegram Web",
+      "url": "https://web.telegram.org",
+      "description": "Fast, installable Telegram client with push notifications and near feature-parity with the native apps.",
+      "category": "Social",
+      "iconLetter": "T",
+      "iconColor": "#2aabee",
+      "tags": ["push-notifications", "messaging"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "starbucks",
+      "name": "Starbucks",
+      "url": "https://app.starbucks.com",
+      "description": "Order ahead and browse the menu even on flaky connections. The PWA is 99.84% smaller than the iOS app and doubled daily active users.",
+      "category": "Travel & Food",
+      "iconLetter": "S",
+      "iconColor": "#00704a",
+      "tags": ["offline", "case-study"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    },
+    {
+      "id": "uber",
+      "name": "Uber",
+      "url": "https://m.uber.com",
+      "description": "Request a ride from a 50KB core app that loads in under 3 seconds on 2G networks — built for riders on any device, anywhere.",
+      "category": "Travel & Food",
+      "iconLetter": "U",
+      "iconColor": "#000000",
+      "tags": ["low-bandwidth", "case-study"],
+      "added": "2026-07-10",
+      "submittedBy": "pwaverse"
+    }
+  ]
+}

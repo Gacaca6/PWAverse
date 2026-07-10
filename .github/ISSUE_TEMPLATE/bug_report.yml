@@ -1,0 +1,23 @@
+name: "🐞 Bug report"
+description: "Something in the PWAverse site is broken or behaving oddly."
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and device
+      placeholder: "e.g. Chrome 138 on Android 15, Safari on iPhone 14"
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, console errors, whether you had the app installed, etc.

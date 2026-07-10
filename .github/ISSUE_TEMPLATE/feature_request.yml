@@ -1,0 +1,22 @@
+name: "💡 Feature idea"
+description: "Suggest an improvement to PWAverse."
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the need before the solution — it helps us find the best design together.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How do you imagine it working?
+  - type: checkboxes
+    id: roadmap
+    attributes:
+      label: Roadmap check
+      options:
+        - label: I checked the roadmap in the README and this isn't already planned

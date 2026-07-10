@@ -1,0 +1,77 @@
+name: "📲 Submit an app"
+description: "Add a Progressive Web App to the PWAverse directory — no coding required."
+title: "Add app: "
+labels: ["app-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for growing the directory! 💜 Fill this in and a maintainer will review your app,
+        add it to `data/apps.json`, and credit you as the submitter.
+
+        Prefer to do it yourself? See [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) for the pull-request route.
+  - type: input
+    id: name
+    attributes:
+      label: App name
+      placeholder: "e.g. Excalidraw"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: App URL
+      description: HTTPS link where the app loads directly.
+      placeholder: "https://..."
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Short description
+      description: One or two sentences, max ~160 characters. What does it do and why is it great?
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Productivity
+        - Design & Creativity
+        - Developer Tools
+        - Social
+        - Music & Audio
+        - Utilities
+        - Games & Fun
+        - Travel & Food
+    validations:
+      required: true
+  - type: input
+    id: brand-color
+    attributes:
+      label: Brand color (hex)
+      description: Used for the app tile in the directory.
+      placeholder: "#5b5bd6"
+  - type: input
+    id: tags
+    attributes:
+      label: Tags (up to 4, comma-separated)
+      placeholder: "offline, open-source, push-notifications"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: PWA checklist
+      description: Confirm the app qualifies for the directory.
+      options:
+        - label: It has a web app manifest and a service worker (installable, or designed for Add to Home Screen)
+          required: true
+        - label: It is a real application people use, not a marketing page
+          required: true
+        - label: It is publicly accessible (a login wall is fine, a paywall to even see the app is not)
+          required: true
+  - type: input
+    id: relationship
+    attributes:
+      label: Your relationship to the app
+      placeholder: "e.g. I built it / I'm a fan / I work on the team"

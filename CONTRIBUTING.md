@@ -1,0 +1,79 @@
+# Contributing to PWAverse
+
+Thank you for helping build the community home of Progressive Web Apps! 💜
+
+There are two easy ways to contribute: **submitting an app** and **improving the site**.
+
+## Submitting an app to the directory
+
+### What qualifies?
+
+An app belongs in PWAverse if it:
+
+1. **Is a real PWA** — it has a web app manifest and a service worker (installable in Chrome/Edge, or clearly designed to be added to the home screen)
+2. **Works as an app** — it's an application people *use*, not a marketing page or blog
+3. **Is publicly accessible** — a login wall is fine, a paywall to even see the app is not
+4. **Is safe** — no malware, scams, or deceptive behavior
+
+Both big-name apps and small indie projects are welcome. Indie projects are especially welcome — discovery is what this project exists for.
+
+### How to submit
+
+**The no-code way:** [fill in the app submission form](https://github.com/Gacaca6/PWAverse/issues/new?template=submit-app.yml) and a maintainer will add it for you, crediting you as the submitter.
+
+**The pull-request way:**
+
+1. Fork this repository
+2. Open [`data/apps.json`](data/apps.json)
+3. Add your entry to the `apps` array (keep the list roughly alphabetical within reason):
+
+```json
+{
+  "id": "your-app-id",
+  "name": "Your App Name",
+  "url": "https://yourapp.example",
+  "description": "One or two sentences: what it does and why it's great. Max ~160 characters.",
+  "category": "Productivity",
+  "iconLetter": "Y",
+  "iconColor": "#5b5bd6",
+  "tags": ["offline", "open-source"],
+  "added": "2026-07-10",
+  "submittedBy": "your-github-username"
+}
+```
+
+4. Check your entry: `node scripts/validate-apps.mjs` (CI runs the same check on your PR)
+5. Open a pull request with the title `Add app: Your App Name`
+
+### Field reference
+
+| Field | Rules |
+|---|---|
+| `id` | lowercase, hyphens only, unique across the file |
+| `name` | official app name |
+| `url` | HTTPS URL where the app loads directly |
+| `description` | ≤ 160 characters, plain language, no marketing superlatives |
+| `category` | must be one of the values in the `categories` array at the top of the file |
+| `iconLetter` | 1 character shown in the tile (usually the first letter) |
+| `iconColor` | hex color for the tile background — use the app's brand color |
+| `tags` | up to 4, lowercase-hyphenated (e.g. `offline`, `push-notifications`, `open-source`) |
+| `added` | today's date, `YYYY-MM-DD` |
+| `submittedBy` | your GitHub username |
+
+### Review process
+
+A maintainer will open your app, confirm it loads and behaves like a PWA, and merge. If something's off, we'll comment on the PR — nothing is rejected without a reason.
+
+## Improving the site
+
+Bug fixes, accessibility improvements, and roadmap features are all fair game.
+
+- The site is intentionally **dependency-free**: plain HTML, CSS, and JS. Please don't introduce frameworks or build steps without discussing in an issue first.
+- Test locally with any static server (`python -m http.server 8080`), including offline behavior (DevTools → Network → Offline).
+- Keep the design tokens in `css/styles.css` — both light and dark themes must work.
+
+For anything bigger than a small fix, open an issue first so we can align before you spend time on it.
+
+## Code of conduct
+
+Be kind. Assume good faith. Remember there's a person on the other side of every PR — many contributors here are submitting their first-ever open source change, and we want that to be a great experience. The full [Code of Conduct](CODE_OF_CONDUCT.md) applies to all project spaces.
