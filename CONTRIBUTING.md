@@ -56,6 +56,8 @@ Both big-name apps and small indie projects are welcome. Indie projects are espe
 | `category` | must be one of the values in the `categories` array at the top of the file |
 | `iconLetter` | 1 character shown in the tile (usually the first letter) |
 | `iconColor` | hex color for the tile background — use the app's brand color |
+
+> **About icons:** after your app is merged, a bot fetches its real icon from your app's own manifest and self-hosts it — the letter tile is only the fallback. Ship a solid 192px+ icon in your manifest and that's what people will see. App owners can request icon removal any time by opening an issue.
 | `tags` | up to 4, lowercase-hyphenated (e.g. `offline`, `push-notifications`, `open-source`) |
 | `added` | today's date, `YYYY-MM-DD` |
 | `submittedBy` | your GitHub username |

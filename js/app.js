@@ -53,6 +53,8 @@ const state = {
   category: null,
   /** @type {Record<string, Score>} */
   scores: {},
+  /** @type {Record<string, string>} */
+  icons: {},
 };
 
 const els = {
@@ -71,7 +73,7 @@ const els = {
 /* --- Data loading ---------------------------------------------------- */
 
 async function loadApps() {
-  // Report cards are optional enrichment — never block the directory on them.
+  // Report cards and real icons are optional enrichment — never block on them.
   fetch('data/scores.json')
     .then((res) => res.json())
     .then((/** @type {{ scores: Record<string, Score> }} */ data) => {
@@ -79,6 +81,14 @@ async function loadApps() {
       render();
     })
     .catch(() => { /* no scores available — directory works without them */ });
+
+  fetch('data/icons.json')
+    .then((res) => res.json())
+    .then((/** @type {{ icons: Record<string, string> }} */ data) => {
+      state.icons = data.icons || {};
+      render();
+    })
+    .catch(() => { /* no icons available — letter tiles work fine */ });
 
   try {
     const res = await fetch('data/apps.json');
@@ -152,15 +162,35 @@ function gradeBadge(score) {
 }
 
 /**
+ * App tile: the app's real icon when we have one (fetched from its own
+ * manifest by scripts/fetch-icons.mjs), otherwise the colored letter tile.
  * @param {App} app
  * @param {string} [extraClass]
  */
 function appIcon(app, extraClass = '') {
   const icon = document.createElement('span');
   icon.className = `app-icon ${extraClass}`.trim();
-  icon.style.background = app.iconColor || 'var(--accent)';
-  icon.textContent = app.iconLetter || app.name[0];
   icon.setAttribute('aria-hidden', 'true');
+
+  const showLetter = () => {
+    icon.innerHTML = '';
+    icon.style.background = app.iconColor || 'var(--accent)';
+    icon.textContent = app.iconLetter || app.name[0];
+  };
+
+  const iconPath = state.icons[app.id];
+  if (iconPath) {
+    icon.style.background = 'var(--bg-soft)';
+    const img = document.createElement('img');
+    img.className = 'app-icon-img';
+    img.src = iconPath;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.addEventListener('error', showLetter);
+    icon.appendChild(img);
+  } else {
+    showLetter();
+  }
   return icon;
 }
 

@@ -38,6 +38,7 @@ And in the spirit of the mission: **PWAverse is itself a PWA.** Install it, go o
 - 🌗 **Dark & light themes** — follows your system preference
 - ✅ **CI-validated data** — every submission is automatically checked against the [directory schema](data/apps.schema.json)
 - 🧪 **Live PWA checks** — CI visits every submitted app and verifies it's reachable, has a valid manifest, and registers a service worker; the whole directory is re-swept weekly for link rot
+- 🎨 **Real app icons** — fetched automatically from each app's own manifest and self-hosted (no hotlinking, works offline); colored letter tiles as the fallback
 - 🎓 **PWA report cards** — every app gets an automated grade (A/B/C) for installability, offline readiness, and iOS friendliness, refreshed weekly and shown right in the directory — no other PWA directory has this
 - 🚫 **No tracking, no ads, no build step** — plain HTML, CSS, and JavaScript
 

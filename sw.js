@@ -7,7 +7,7 @@
    Bump CACHE_VERSION whenever precached files change.
 --------------------------------------------------------------------------- */
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const SHELL_CACHE = `pwaverse-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `pwaverse-data-${CACHE_VERSION}`;
 
@@ -51,7 +51,21 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // let external launches pass through
 
-  // Directory data (apps.json, scores.json): network-first, cache fallback.
+  // Fetched app icons: cache-first with runtime fill, so tiles work offline.
+  if (url.pathname.includes('/icons/apps/')) {
+    event.respondWith(
+      caches.open(DATA_CACHE).then(async (cache) => {
+        const hit = await cache.match(request);
+        if (hit) return hit;
+        const res = await fetch(request);
+        if (res.ok) cache.put(request, res.clone());
+        return res;
+      })
+    );
+    return;
+  }
+
+  // Directory data (apps.json, scores.json, icons.json): network-first, cache fallback.
   if (url.pathname.includes('/data/')) {
     event.respondWith(
       fetch(request)

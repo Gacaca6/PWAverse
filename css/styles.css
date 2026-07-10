@@ -288,6 +288,15 @@ a { color: var(--accent); }
   font-size: 1.35rem;
   font-weight: 700;
   color: #fff;
+  overflow: hidden;
+}
+
+.app-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
 }
 
 .app-card h3 {
