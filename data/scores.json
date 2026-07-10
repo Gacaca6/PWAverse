@@ -30,10 +30,10 @@
       "checked": "2026-07-10"
     },
     "spotify-web": {
-      "installability": "unknown",
+      "installability": "good",
       "offline": "unknown",
-      "ios": "unknown",
-      "grade": "?",
+      "ios": "poor",
+      "grade": "B",
       "checked": "2026-07-10"
     },
     "squoosh": {
