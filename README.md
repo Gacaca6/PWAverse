@@ -74,6 +74,13 @@ node scripts/check-pwas.mjs      # visit every listed app and verify it's a real
 node scripts/score-pwas.mjs      # regenerate the PWA report cards (data/scores.json)
 ```
 
+## Deploying
+
+PWAverse is a fully static site — no build step, so any static host works:
+
+- **Vercel (recommended):** import the repo at [vercel.com/new](https://vercel.com/new) and keep every default (no framework, no build command, no output directory — it's plain static files). The included [`vercel.json`](vercel.json) sets correct PWA caching headers: `sw.js` and `/data/*` always revalidate, so installed apps pick up new versions and fresh report cards immediately, while icons cache for a day. Every PR also gets an automatic preview deployment — reviewers can see a submitted app live in the directory before merging.
+- **GitHub Pages (mirror):** Settings → Pages → deploy from `main` / root.
+
 ## Roadmap
 
 - [x] **v0.1** — Directory: browse, search, filter, launch, install
