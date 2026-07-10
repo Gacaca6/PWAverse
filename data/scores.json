@@ -8,10 +8,31 @@
       "grade": "A",
       "checked": "2026-07-10"
     },
+    "hano-bus": {
+      "installability": "good",
+      "offline": "good",
+      "ios": "good",
+      "grade": "A",
+      "checked": "2026-07-10"
+    },
+    "kina-wige": {
+      "installability": "good",
+      "offline": "good",
+      "ios": "good",
+      "grade": "A",
+      "checked": "2026-07-10"
+    },
     "monkeytype": {
       "installability": "good",
       "offline": "good",
       "ios": "ok",
+      "grade": "A",
+      "checked": "2026-07-10"
+    },
+    "musi-me": {
+      "installability": "good",
+      "offline": "good",
+      "ios": "good",
       "grade": "A",
       "checked": "2026-07-10"
     },
@@ -27,6 +48,13 @@
       "offline": "unknown",
       "ios": "good",
       "grade": "B",
+      "checked": "2026-07-10"
+    },
+    "poetry-assistant": {
+      "installability": "good",
+      "offline": "good",
+      "ios": "good",
+      "grade": "A",
       "checked": "2026-07-10"
     },
     "spotify-web": {
@@ -64,6 +92,13 @@
       "grade": "A",
       "checked": "2026-07-10"
     },
+    "tweetforge": {
+      "installability": "good",
+      "offline": "good",
+      "ios": "good",
+      "grade": "A",
+      "checked": "2026-07-10"
+    },
     "uber": {
       "installability": "good",
       "offline": "unknown",
@@ -76,6 +111,13 @@
       "offline": "good",
       "ios": "poor",
       "grade": "B",
+      "checked": "2026-07-10"
+    },
+    "wayfind": {
+      "installability": "good",
+      "offline": "good",
+      "ios": "good",
+      "grade": "A",
       "checked": "2026-07-10"
     },
     "x-twitter": {
