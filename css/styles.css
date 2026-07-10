@@ -335,6 +335,68 @@ a { color: var(--accent); }
   color: var(--text-soft);
 }
 
+/* --- PWA report card ----------------------------------------------------- */
+
+.grade-badge {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  margin-left: auto;
+  padding-inline: 4px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.grade-a { background: #2e9e5b; }
+.grade-b { background: var(--accent); }
+.grade-c { background: #c78a00; }
+.grade-unknown { background: #6b7285; }
+
+.report-card {
+  margin: 14px 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
+.report-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 0.88rem;
+  color: var(--text-soft);
+  border-top: 1px solid var(--border);
+}
+
+.report-row .dim { font-weight: 700; }
+.dim-good { color: #2e9e5b; }
+.dim-ok { color: var(--accent-strong); }
+.dim-poor { color: #c78a00; }
+.dim-unknown { color: var(--text-soft); }
+
+.report-note {
+  margin: 10px 0 0;
+  font-size: 0.74rem;
+  color: var(--text-soft);
+  opacity: 0.85;
+}
+
 /* --- Submit CTA --------------------------------------------------------- */
 
 .submit-cta {

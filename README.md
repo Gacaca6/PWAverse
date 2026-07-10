@@ -37,6 +37,7 @@ And in the spirit of the mission: **PWAverse is itself a PWA.** Install it, go o
 - 🌗 **Dark & light themes** — follows your system preference
 - ✅ **CI-validated data** — every submission is automatically checked against the [directory schema](data/apps.schema.json)
 - 🧪 **Live PWA checks** — CI visits every submitted app and verifies it's reachable, has a valid manifest, and registers a service worker; the whole directory is re-swept weekly for link rot
+- 🎓 **PWA report cards** — every app gets an automated grade (A/B/C) for installability, offline readiness, and iOS friendliness, refreshed weekly and shown right in the directory — no other PWA directory has this
 - 🚫 **No tracking, no ads, no build step** — plain HTML, CSS, and JavaScript
 
 ## Add your app to the directory
@@ -70,6 +71,7 @@ Then open `http://localhost:8080`. To run the same checks CI runs before opening
 ```bash
 node scripts/validate-apps.mjs   # directory data rules
 node scripts/check-pwas.mjs      # visit every listed app and verify it's a real PWA
+node scripts/score-pwas.mjs      # regenerate the PWA report cards (data/scores.json)
 ```
 
 ## Roadmap
@@ -77,7 +79,7 @@ node scripts/check-pwas.mjs      # visit every listed app and verify it's a real
 - [x] **v0.1** — Directory: browse, search, filter, launch, install
 - [x] **v0.2** — App submission via GitHub issue form + CI validation of directory data
 - [x] **v0.3** — Automated PWA checks: CI verifies each submitted app's manifest & service worker, plus a weekly link-rot sweep
-- [ ] **v0.4** — PWA "report card": per-app scores for installability, offline support, and iOS compatibility
+- [x] **v0.4** — PWA report cards: per-app grades for installability, offline support, and iOS friendliness, auto-refreshed weekly and displayed in the directory
 - [ ] **v0.5** — Screenshots and richer app pages
 - [ ] **v1.0** — Community moderation, ratings, and multi-language support
 

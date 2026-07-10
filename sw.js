@@ -7,7 +7,7 @@
    Bump CACHE_VERSION whenever precached files change.
 --------------------------------------------------------------------------- */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const SHELL_CACHE = `pwaverse-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `pwaverse-data-${CACHE_VERSION}`;
 
@@ -51,8 +51,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // let external launches pass through
 
-  // Directory data: network-first, fall back to cache when offline.
-  if (url.pathname.endsWith('/data/apps.json')) {
+  // Directory data (apps.json, scores.json): network-first, cache fallback.
+  if (url.pathname.includes('/data/')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
