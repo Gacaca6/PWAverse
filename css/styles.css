@@ -52,7 +52,10 @@ body {
 .container {
   max-width: 1080px;
   margin-inline: auto;
-  padding-inline: clamp(16px, 4vw, 32px);
+  /* Respect notch/home-indicator side insets in landscape (0 elsewhere) */
+  padding-inline:
+    max(clamp(16px, 4vw, 32px), env(safe-area-inset-left))
+    max(clamp(16px, 4vw, 32px), env(safe-area-inset-right));
 }
 
 a { color: var(--accent); }
@@ -67,6 +70,9 @@ a { color: var(--accent); }
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
+  /* Installed on iOS the page draws under the status bar (black-translucent):
+     push the header content below the clock/battery. 0 everywhere else. */
+  padding-top: env(safe-area-inset-top);
 }
 
 .header-inner {
@@ -278,6 +284,13 @@ a { color: var(--accent); }
   gap: 12px;
 }
 
+/* The title block must be allowed to shrink or long names push the
+   grade badge out of the card (flex children default to min-width:auto). */
+.app-card-top > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .app-icon {
   display: grid;
   place-items: center;
@@ -303,12 +316,16 @@ a { color: var(--accent); }
   margin: 0;
   font-size: 1.02rem;
   line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .app-card .app-category {
   margin: 2px 0 0;
   font-size: 0.78rem;
   color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .app-card p.app-desc {
@@ -424,7 +441,8 @@ a { color: var(--accent); }
 
 .site-footer {
   border-top: 1px solid var(--border);
-  padding: 28px 0 40px;
+  /* Keep the last line clear of the iOS home indicator when installed */
+  padding: 28px 0 calc(40px + env(safe-area-inset-bottom));
   text-align: center;
   color: var(--text-soft);
   font-size: 0.9rem;
@@ -500,10 +518,24 @@ a { color: var(--accent); }
 /* --- Small screens --------------------------------------------------------- */
 
 @media (max-width: 480px) {
-  .header-actions .btn { padding: 7px 13px; font-size: 0.85rem; }
+  /* Header: keep brand + both buttons on one uncrowded row */
+  .brand { gap: 7px; }
+  .brand-name { font-size: 1rem; }
+  .brand-mark { font-size: 1.3rem; }
+  .header-actions { gap: 6px; }
+  .header-actions .btn { padding: 7px 12px; font-size: 0.82rem; }
+
+  /* Cards: two tidy columns, nothing colliding */
   .app-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .app-card { padding: 14px; }
+  .app-card { padding: 12px; gap: 10px; }
   .app-card p.app-desc { display: none; }
+  .app-card-top { gap: 8px; }
+  .app-card .app-icon { width: 40px; height: 40px; border-radius: 10px; font-size: 1.15rem; }
+  .app-card h3 { font-size: 0.92rem; }
+  .app-card .app-category { font-size: 0.72rem; }
+  .app-card .grade-badge { min-width: 22px; height: 22px; font-size: 0.72rem; border-radius: 7px; }
+  .tag { font-size: 0.66rem; padding: 2px 8px; }
+  .app-card .tag:nth-child(n + 3) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -665,5 +697,13 @@ a { color: var(--accent); }
 @media (max-width: 480px) {
   .page-header { gap: 14px; }
   .app-icon.page-icon { width: 72px; height: 72px; border-radius: 17px; font-size: 1.9rem; }
+  .page-head-text h1 { overflow-wrap: anywhere; }
+  .page-meta { font-size: 0.82rem; }
+  .page-actions { flex-wrap: wrap; }
   .preview-gallery .shot { height: 340px; }
+
+  /* Info strip: four cells fit a 320px screen without crowding */
+  .info-cell { min-width: 74px; padding: 12px 6px; }
+  .info-label { font-size: 0.6rem; }
+  .info-value { font-size: 1.1rem; }
 }

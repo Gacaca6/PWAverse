@@ -477,6 +477,14 @@ window.addEventListener('appinstalled', () => {
   els.installBtn.hidden = true;
 });
 
+// Belt-and-braces: if we're running installed (some iOS versions report it
+// late), never show the install button.
+window.addEventListener('pageshow', () => {
+  const standaloneNow = window.matchMedia('(display-mode: standalone)').matches ||
+    /** @type {{ standalone?: boolean }} */ (window.navigator).standalone === true;
+  if (standaloneNow) els.installBtn.hidden = true;
+});
+
 /* --- Online/offline indicator ---------------------------------------------- */
 
 function updateOnlineStatus() {
