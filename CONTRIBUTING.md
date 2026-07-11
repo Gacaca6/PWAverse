@@ -62,6 +62,26 @@ Both big-name apps and small indie projects are welcome. Indie projects are espe
 | `added` | today's date, `YYYY-MM-DD` |
 | `submittedBy` | your GitHub username |
 
+### Make your listing shine (optional but worth it)
+
+PWAverse builds your app's preview gallery automatically: a launch screen
+(from your manifest's `background_color`, icon, and name — the same recipe
+Android uses for your real splash), plus screenshots of your app.
+
+**You control the gallery.** If your web app manifest includes a
+[`screenshots`](https://developer.mozilla.org/docs/Web/Manifest/screenshots)
+array, PWAverse uses *your* screenshots — exactly like store listing assets:
+
+```json
+"screenshots": [
+  { "src": "/screenshots/editor.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow" },
+  { "src": "/screenshots/gallery.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow" }
+]
+```
+
+Portrait (`narrow`) images look best. Bonus: those same manifest screenshots
+also enhance Chrome's own install dialog for your app everywhere.
+
 ### Review process
 
 Two things happen on your PR:

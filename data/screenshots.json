@@ -2,70 +2,91 @@
   "generated": "2026-07-11",
   "screenshots": {
     "excalidraw": [
+      "screenshots/excalidraw-splash.jpg",
       "screenshots/excalidraw-1.png",
       "screenshots/excalidraw-2.png",
       "screenshots/excalidraw-3.png",
       "screenshots/excalidraw-4.png"
     ],
     "hano-bus": [
+      "screenshots/hano-bus-splash.jpg",
       "screenshots/hano-bus-1.jpg"
     ],
     "kina-wige": [
+      "screenshots/kina-wige-splash.jpg",
       "screenshots/kina-wige-1.jpg"
     ],
     "monkeytype": [
+      "screenshots/monkeytype-splash.jpg",
       "screenshots/monkeytype-1.jpg",
       "screenshots/monkeytype-2.jpg"
     ],
     "musi-me": [
+      "screenshots/musi-me-splash.jpg",
       "screenshots/musi-me-1.jpg"
     ],
     "photopea": [
+      "screenshots/photopea-splash.jpg",
       "screenshots/photopea-1.jpg",
       "screenshots/photopea-2.jpg",
-      "screenshots/photopea-3.jpg"
+      "screenshots/photopea-3.jpg",
+      "screenshots/photopea-4.jpg"
     ],
     "pinterest": [
+      "screenshots/pinterest-splash.jpg",
       "screenshots/pinterest-1.jpg",
-      "screenshots/pinterest-2.jpg",
-      "screenshots/pinterest-3.jpg"
+      "screenshots/pinterest-2.jpg"
     ],
     "poetry-assistant": [
+      "screenshots/poetry-assistant-splash.jpg",
       "screenshots/poetry-assistant-1.jpg"
     ],
     "spotify-web": [
+      "screenshots/spotify-web-splash.jpg",
       "screenshots/spotify-web-1.jpg"
     ],
     "squoosh": [
+      "screenshots/squoosh-splash.jpg",
       "screenshots/squoosh-1.png",
       "screenshots/squoosh-2.jpg",
       "screenshots/squoosh-3.jpg",
       "screenshots/squoosh-4.png"
     ],
     "starbucks": [
+      "screenshots/starbucks-splash.jpg",
       "screenshots/starbucks-1.jpg",
       "screenshots/starbucks-2.jpg",
       "screenshots/starbucks-3.jpg"
     ],
+    "svgomg": [
+      "screenshots/svgomg-splash.jpg"
+    ],
     "telegram-web": [
+      "screenshots/telegram-web-splash.jpg",
       "screenshots/telegram-web-1.jpg"
     ],
     "tweetforge": [
+      "screenshots/tweetforge-splash.jpg",
       "screenshots/tweetforge-1.jpg",
       "screenshots/tweetforge-2.jpg",
       "screenshots/tweetforge-3.jpg"
     ],
     "uber": [
+      "screenshots/uber-splash.jpg",
       "screenshots/uber-1.jpg"
     ],
     "vscode-dev": [
+      "screenshots/vscode-dev-splash.jpg",
       "screenshots/vscode-dev-1.jpg"
     ],
     "wayfind": [
+      "screenshots/wayfind-splash.jpg",
       "screenshots/wayfind-1.jpg"
     ],
     "x-twitter": [
-      "screenshots/x-twitter-1.jpg"
+      "screenshots/x-twitter-splash.jpg",
+      "screenshots/x-twitter-1.jpg",
+      "screenshots/x-twitter-2.jpg"
     ]
   }
 }

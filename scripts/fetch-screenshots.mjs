@@ -1,43 +1,49 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * App Store-style preview galleries (roadmap v0.6).
- * Collects up to 4 preview images per app, in order of preference:
+ * App Store-style preview galleries (v0.6, richer previews v0.7).
+ * Builds up to 5 preview images per app:
  *
- *   1. The app's own manifest `screenshots` array — official, store-grade
- *      previews chosen by the app's developer (narrow/portrait preferred)
- *   2. Headless-browser captures: the landing view plus up to two
- *      scrolled-down views, at a phone viewport (390x780, 2x)
+ *   1. LAUNCH SCREEN — synthesized exactly the way Android builds a PWA
+ *      splash: manifest background_color + app icon + name. Every app
+ *      gets one, so every gallery opens like a real install preview.
+ *   2. Official manifest `screenshots` — store-grade previews chosen by
+ *      the app's developer (narrow/portrait first). These win outright.
+ *   3. Otherwise: landing capture, up to two scrolled views, and up to
+ *      a few IN-APP screens found by following the app's own same-origin
+ *      navigation links (plain page visits only — never login, checkout,
+ *      download, or account links; no buttons are ever clicked).
  *
- * Files land in screenshots/<id>-N.<ext>; data/screenshots.json maps
- * id → [paths]. Stale files for delisted apps are pruned. No page
- * interaction is performed — login-walled apps simply show their door.
+ * Files land in screenshots/<id>-*.ext; data/screenshots.json maps
+ * id → [paths]. Stale files are pruned. Near-duplicate and blank
+ * captures are discarded.
  *
- * Playwright is a CI/maintainer tool only (the site stays dependency-free).
- * The module is resolved from PLAYWRIGHT_DIR (an npm prefix) or a normal
- * import if installed. CI sets this up in .github/workflows/score-pwas.yml.
+ * Playwright is a CI/maintainer tool only (the site stays dependency-free),
+ * resolved via PLAYWRIGHT_DIR (an npm prefix) or a normal import.
  *
  * Usage:
  *   node scripts/fetch-screenshots.mjs            # apps missing previews
- *   node scripts/fetch-screenshots.mjs --force    # re-capture everything
+ *   node scripts/fetch-screenshots.mjs --force    # rebuild everything
  *   node scripts/fetch-screenshots.mjs --ids a,b  # specific apps (implies force)
  */
 
-import { readFile, writeFile, mkdir, readdir, unlink } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir, unlink, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, extname } from 'node:path';
 import { fetchText, findManifestHref, UA, FETCH_TIMEOUT_MS } from './lib/pwa-facts.mjs';
 
-/** @typedef {{ id: string, name: string, url: string }} App */
+/** @typedef {{ id: string, name: string, url: string, iconLetter: string, iconColor: string }} App */
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, 'screenshots');
-const MAX_SHOTS = 4;
+const MAX_CAPTURES = 4;          // besides the splash
 const MAX_SCROLL_SHOTS = 3;
+const MAX_ROUTE_SHOTS = 3;
 const MAX_IMAGE_BYTES = 2_000_000;
-const MIN_IMAGE_BYTES = 1_000;
+const MIN_IMAGE_BYTES = 6_000;   // smaller jpegs are blank/near-blank pages
 const VIEWPORT = { width: 390, height: 780 };
+const UNSAFE_LINK = /login|signin|sign-in|signup|sign-up|auth|logout|account|profile|checkout|cart|pay|billing|subscribe|register|download|\.(pdf|zip|dmg|exe|apk)(\?|$)|mailto:|tel:/i;
 
 /** @type {Record<string, string>} */
 const EXT_BY_TYPE = {
@@ -69,37 +75,92 @@ async function loadPlaywright() {
   }
 }
 
-/* --- Source 1: official screenshots from the app's manifest -------------- */
+/* --- Per-app context: page HTML + parsed manifest -------------------------- */
 
 /**
  * @param {App} app
- * @returns {Promise<{ url: string, type?: string }[]>}
+ * @returns {Promise<{ html: string, finalUrl: string, manifest: any, manifestUrl: string | null }>}
  */
-async function manifestScreenshots(app) {
+async function previewContext(app) {
+  const ctx = { html: '', finalUrl: app.url, manifest: /** @type {any} */ (null), manifestUrl: /** @type {string | null} */ (null) };
   try {
     const page = await fetchText(app.url);
-    if (!page.ok) return [];
+    if (!page.ok) return ctx;
+    ctx.html = page.text;
+    ctx.finalUrl = page.finalUrl;
     const href = findManifestHref(page.text);
-    if (!href) return [];
-    const manifestUrl = new URL(href, page.finalUrl).href;
-    const res = await fetchText(manifestUrl);
-    if (!res.ok) return [];
-    const manifest = JSON.parse(res.text.replace(/^﻿/, ''));
-    if (!Array.isArray(manifest.screenshots)) return [];
+    if (href) {
+      ctx.manifestUrl = new URL(href, page.finalUrl).href;
+      const res = await fetchText(ctx.manifestUrl);
+      if (res.ok) ctx.manifest = JSON.parse(res.text.replace(/^﻿/, ''));
+    }
+  } catch { /* unreachable or bad manifest — captures may still work */ }
+  return ctx;
+}
 
-    /** @type {{ src?: string, type?: string, form_factor?: string, sizes?: string }[]} */
-    const entries = manifest.screenshots.filter((/** @type {unknown} */ s) => s && typeof (/** @type {{ src?: unknown }} */ (s)).src === 'string');
-    // Portrait/narrow first — that's the store look; wide ones fill remaining slots.
-    const narrow = entries.filter((s) => s.form_factor !== 'wide');
-    const wide = entries.filter((s) => s.form_factor === 'wide');
-    return [...narrow, ...wide].slice(0, MAX_SHOTS).map((s) => ({
-      url: new URL(/** @type {string} */(s.src), manifestUrl).href,
-      type: s.type,
-    }));
+/* --- Shot 1: synthesized launch (splash) screen ----------------------------- */
+
+/** @param {string} hex */
+function isLight(hex) {
+  const m = hex.match(/^#([0-9a-f]{6})$/i);
+  if (!m) return false;
+  const n = parseInt(m[1], 16);
+  const lum = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+  return lum > 140;
+}
+
+/** @param {string} s */
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/**
+ * Render the app's OS-style launch screen: manifest background_color,
+ * the icon we self-host, and the app name — same recipe Android uses.
+ * @param {import('playwright').Browser} browser
+ * @param {App} app
+ * @param {any} manifest
+ * @param {Record<string, string>} iconMap
+ * @returns {Promise<string | null>} saved repo-relative path
+ */
+async function buildSplash(browser, app, manifest, iconMap) {
+  let bg = typeof manifest?.background_color === 'string' ? manifest.background_color.trim() : '';
+  if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(bg)) bg = '#0f1117';
+  const fg = isLight(bg) ? '#16181f' : '#f4f5fa';
+
+  let iconHtml;
+  const iconPath = iconMap[app.id];
+  if (iconPath) {
+    const bytes = await readFile(join(root, iconPath));
+    const ext = extname(iconPath).slice(1);
+    const mime = ext === 'svg' ? 'image/svg+xml' : ext === 'jpg' ? 'image/jpeg' : `image/${ext}`;
+    iconHtml = `<img src="data:${mime};base64,${bytes.toString('base64')}" style="width:104px;height:104px;border-radius:24px;object-fit:cover" alt="">`;
+  } else {
+    iconHtml = `<div style="width:104px;height:104px;border-radius:24px;background:${app.iconColor};display:grid;place-items:center;color:#fff;font:700 48px system-ui">${escapeHtml(app.iconLetter)}</div>`;
+  }
+
+  const name = escapeHtml(typeof manifest?.name === 'string' && manifest.name ? manifest.name : app.name);
+  const html = `<!doctype html><body style="margin:0;width:${VIEWPORT.width}px;height:${VIEWPORT.height}px;display:grid;place-items:center;background:${bg}">
+    <div style="text-align:center;font-family:system-ui">
+      <div style="display:inline-block">${iconHtml}</div>
+      <p style="margin:18px 0 0;font:600 17px system-ui;color:${fg}">${name}</p>
+    </div></body>`;
+
+  const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2 });
+  try {
+    const page = await context.newPage();
+    await page.setContent(html, { waitUntil: 'load' });
+    const file = `${app.id}-splash.jpg`;
+    await page.screenshot({ path: join(outDir, file), type: 'jpeg', quality: 88 });
+    return `screenshots/${file}`;
   } catch {
-    return [];
+    return null;
+  } finally {
+    await context.close();
   }
 }
+
+/* --- Shots 2..n: official manifest screenshots ------------------------------ */
 
 /**
  * @param {string} url
@@ -116,33 +177,109 @@ async function fetchBinary(url) {
   return { ok: res.ok, type, bytes };
 }
 
-/* --- Source 2: headless scroll-capture ----------------------------------- */
+/**
+ * @param {App} app
+ * @param {any} manifest
+ * @param {string | null} manifestUrl
+ * @returns {Promise<string[]>}
+ */
+async function officialScreenshots(app, manifest, manifestUrl) {
+  /** @type {string[]} */
+  const saved = [];
+  if (!manifestUrl || !Array.isArray(manifest?.screenshots)) return saved;
+
+  /** @type {{ src?: string, form_factor?: string }[]} */
+  const entries = manifest.screenshots.filter((/** @type {unknown} */ s) => s && typeof (/** @type {{ src?: unknown }} */ (s)).src === 'string');
+  const narrow = entries.filter((s) => s.form_factor !== 'wide');
+  const wide = entries.filter((s) => s.form_factor === 'wide');
+
+  for (const [i, entry] of [...narrow, ...wide].slice(0, MAX_CAPTURES).entries()) {
+    try {
+      const url = new URL(/** @type {string} */(entry.src), manifestUrl).href;
+      const img = await fetchBinary(url);
+      const ext = EXT_BY_TYPE[img.type];
+      if (!img.ok || !ext || img.bytes.length < 1_000 || img.bytes.length > MAX_IMAGE_BYTES) continue;
+      const file = `${app.id}-${i + 1}.${ext}`;
+      await writeFile(join(outDir, file), img.bytes);
+      saved.push(`screenshots/${file}`);
+    } catch { /* skip this one */ }
+  }
+  return saved;
+}
+
+/* --- Fallback: landing + scrolled views + safe in-app routes ---------------- */
+
+/**
+ * Same-origin navigation links from the landing page — plain content pages
+ * only, never auth/commerce/download links.
+ * @param {string} html
+ * @param {string} baseUrl
+ * @returns {string[]}
+ */
+function safeRouteLinks(html, baseUrl) {
+  const origin = new URL(baseUrl).origin;
+  const basePath = new URL(baseUrl).pathname;
+  /** @type {Map<string, string>} */
+  const routes = new Map();
+  for (const tag of html.match(/<a\b[^>]*href\s*=\s*("[^"]*"|'[^']*')[^>]*>/gi) || []) {
+    const m = tag.match(/href\s*=\s*("([^"]*)"|'([^']*)')/i);
+    const href = m && (m[2] ?? m[3]);
+    if (!href || href.startsWith('#') || UNSAFE_LINK.test(href)) continue;
+    try {
+      const u = new URL(href, baseUrl);
+      if (u.origin !== origin || u.pathname === basePath || u.pathname === '/') continue;
+      if (UNSAFE_LINK.test(u.pathname)) continue;
+      if (!routes.has(u.pathname)) routes.set(u.pathname, u.href.split('#')[0]);
+    } catch { /* unparseable href */ }
+  }
+  return [...routes.values()].slice(0, MAX_ROUTE_SHOTS);
+}
 
 /**
  * @param {import('playwright').Browser} browser
  * @param {App} app
- * @returns {Promise<string[]>} saved repo-relative paths
+ * @param {string[]} routeLinks
+ * @returns {Promise<string[]>}
  */
-async function captureScrollShots(browser, app) {
+async function captureShots(browser, app, routeLinks) {
   /** @type {string[]} */
   const saved = [];
+  /** @type {number[]} */
+  const sizes = [];
   const context = await browser.newContext({
     viewport: VIEWPORT,
     deviceScaleFactor: 2,
     userAgent: UA,
     reducedMotion: 'reduce',
   });
+
+  /**
+   * @param {import('playwright').Page} page
+   * @param {number} n
+   */
+  const snap = async (page, n) => {
+    const file = `${app.id}-${n}.jpg`;
+    const path = join(outDir, file);
+    await page.screenshot({ path, type: 'jpeg', quality: 80 });
+    const { size } = await stat(path);
+    // Discard blank pages and near-duplicates of earlier shots.
+    if (size < MIN_IMAGE_BYTES || sizes.some((s) => Math.abs(s - size) / s < 0.03)) {
+      await unlink(path);
+      return false;
+    }
+    sizes.push(size);
+    saved.push(`screenshots/${file}`);
+    return true;
+  };
+
   try {
     const page = await context.newPage();
     await page.goto(app.url, { waitUntil: 'load', timeout: 30_000 });
-    await page.waitForTimeout(6_000); // let SPAs render and fonts settle
+    await page.waitForTimeout(6_000);
 
-    for (let i = 0; i < MAX_SCROLL_SHOTS; i++) {
-      const file = `${app.id}-${i + 1}.jpg`;
-      await page.screenshot({ path: join(outDir, file), type: 'jpeg', quality: 80 });
-      saved.push(`screenshots/${file}`);
-
-      // Scroll one viewport down; stop when there's nothing further to show.
+    let n = 1;
+    for (let i = 0; i < MAX_SCROLL_SHOTS && saved.length < MAX_CAPTURES; i++) {
+      if (await snap(page, n)) n++;
       const canScroll = await page.evaluate(() => {
         const before = window.scrollY;
         window.scrollBy(0, window.innerHeight * 0.92);
@@ -150,6 +287,17 @@ async function captureScrollShots(browser, app) {
       });
       if (!canScroll) break;
       await page.waitForTimeout(1_200);
+    }
+
+    // In-app screens via the app's own navigation links (plain GETs only).
+    for (const link of routeLinks) {
+      if (saved.length >= MAX_CAPTURES) break;
+      try {
+        await page.goto(link, { waitUntil: 'load', timeout: 20_000 });
+        if (new URL(page.url()).origin !== new URL(app.url).origin) continue;
+        await page.waitForTimeout(3_500);
+        if (await snap(page, n)) n++;
+      } catch { /* route refused to render — keep going */ }
     }
   } finally {
     await context.close();
@@ -166,12 +314,16 @@ const raw = await readFile(join(root, 'data', 'apps.json'), 'utf8');
 /** @type {{ apps: App[] }} */
 const data = JSON.parse(raw);
 
+/** @type {Record<string, string>} */
+let iconMap = {};
+try {
+  iconMap = JSON.parse(await readFile(join(root, 'data', 'icons.json'), 'utf8')).icons || {};
+} catch { /* no icons yet — splash falls back to letter tiles */ }
+
 /** @type {Record<string, string[]>} */
 let existing = {};
 try {
-  const shotsRaw = await readFile(join(root, 'data', 'screenshots.json'), 'utf8');
-  const parsed = JSON.parse(shotsRaw).screenshots || {};
-  // Migrate v0.5 single-string entries to arrays.
+  const parsed = JSON.parse(await readFile(join(root, 'data', 'screenshots.json'), 'utf8')).screenshots || {};
   for (const [id, val] of Object.entries(parsed)) {
     existing[id] = Array.isArray(val) ? val : [val];
   }
@@ -186,14 +338,13 @@ if (idsFlag !== -1 && args[idsFlag + 1]) {
   targets = data.apps.filter((a) => !existing[a.id] || existing[a.id].length === 0);
 }
 
-// Drop mappings for apps no longer in the directory.
 const liveIds = new Set(data.apps.map((a) => a.id));
 for (const id of Object.keys(existing)) {
   if (!liveIds.has(id)) delete existing[id];
 }
 
 if (targets.length === 0) {
-  console.log('All apps already have previews. Use --force to re-capture.');
+  console.log('All apps already have previews. Use --force to rebuild.');
 } else {
   console.log(`Building previews for ${targets.length} app${targets.length === 1 ? '' : 's'}…\n`);
   await mkdir(outDir, { recursive: true });
@@ -201,35 +352,35 @@ if (targets.length === 0) {
   const browser = await pw.chromium.launch();
 
   for (const app of targets) {
+    const ctx = await previewContext(app);
     /** @type {string[]} */
-    let shots = [];
+    const shots = [];
 
-    // Official manifest screenshots win outright when present.
-    const official = await manifestScreenshots(app);
-    for (const [i, entry] of official.entries()) {
-      try {
-        const img = await fetchBinary(entry.url);
-        const ext = EXT_BY_TYPE[img.type];
-        if (!img.ok || !ext || img.bytes.length < MIN_IMAGE_BYTES || img.bytes.length > MAX_IMAGE_BYTES) continue;
-        const file = `${app.id}-${i + 1}.${ext}`;
-        await writeFile(join(outDir, file), img.bytes);
-        shots.push(`screenshots/${file}`);
-      } catch { /* skip this one */ }
-    }
-    const source = shots.length > 0 ? 'official manifest screenshots' : 'captured';
+    const splash = await buildSplash(browser, app, ctx.manifest, iconMap);
+    if (splash) shots.push(splash);
 
-    if (shots.length === 0) {
+    const official = await officialScreenshots(app, ctx.manifest, ctx.manifestUrl);
+    let source;
+    if (official.length > 0) {
+      shots.push(...official);
+      source = `splash + ${official.length} official`;
+    } else {
+      const routes = ctx.html ? safeRouteLinks(ctx.html, ctx.finalUrl) : [];
+      /** @type {string[]} */
+      let captured = [];
       try {
-        shots = await captureScrollShots(browser, app);
+        captured = await captureShots(browser, app, routes);
       } catch { /* page refused to render headlessly */ }
+      shots.push(...captured);
+      source = `splash + ${captured.length} captured${routes.length ? ` (${routes.length} routes tried)` : ''}`;
     }
 
     if (shots.length > 0) {
       existing[app.id] = shots;
-      console.log(`  ✔ ${app.name} — ${shots.length} preview${shots.length === 1 ? '' : 's'} (${source})`);
+      console.log(`  ✔ ${app.name} — ${shots.length} previews (${source})`);
     } else {
       delete existing[app.id];
-      console.log(`  ⚠ ${app.name} — no previews possible, page will omit the gallery`);
+      console.log(`  ⚠ ${app.name} — no previews possible`);
     }
   }
 
