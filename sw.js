@@ -7,7 +7,7 @@
    Bump CACHE_VERSION whenever precached files change.
 --------------------------------------------------------------------------- */
 
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v10';
 const SHELL_CACHE = `pwaverse-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `pwaverse-data-${CACHE_VERSION}`;
 

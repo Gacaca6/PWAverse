@@ -31,7 +31,7 @@
   </header>
 
   <main>
-    <section class="hero container">
+    <section class="hero container directory-view">
       <p class="hero-eyebrow">Community-curated · Open source</p>
       <h1>The open web has apps.<br />This is where you find them.</h1>
       <p class="hero-sub">
@@ -45,7 +45,7 @@
       <div id="category-chips" class="chips" role="group" aria-label="Filter by category"></div>
     </section>
 
-    <section class="container">
+    <section class="container directory-view">
       <div class="results-meta">
         <span id="results-count"></span>
         <span id="offline-badge" class="offline-badge" hidden>⚡ Offline — showing cached apps</span>
@@ -54,7 +54,7 @@
       <p id="empty-state" class="empty-state" hidden>No apps match your search — yet. <a href="#submit">Know one? Add it!</a></p>
     </section>
 
-    <section id="submit" class="container submit-cta">
+    <section id="submit" class="container submit-cta directory-view">
       <h2>Built a PWA? Get it discovered.</h2>
       <p>
         Every app here lives in a simple JSON file anyone can edit.
@@ -62,6 +62,9 @@
       </p>
       <a class="btn btn-primary" id="submit-link" href="https://github.com/" target="_blank" rel="noopener">Submit your app →</a>
     </section>
+
+    <!-- Dedicated per-app page (hash-routed: #app/<id>) -->
+    <section id="app-page" class="container app-page" hidden></section>
   </main>
 
   <footer class="site-footer">
@@ -70,14 +73,6 @@
       <p class="footer-fine">MIT licensed · No tracking · Data lives in the repo</p>
     </div>
   </footer>
-
-  <!-- App detail dialog -->
-  <dialog id="app-dialog" class="app-dialog" aria-labelledby="dialog-title">
-    <form method="dialog" class="dialog-close-form">
-      <button class="dialog-close" aria-label="Close">✕</button>
-    </form>
-    <div id="dialog-body"></div>
-  </dialog>
 
   <!-- iOS install instructions dialog -->
   <dialog id="ios-dialog" class="app-dialog" aria-labelledby="ios-title">

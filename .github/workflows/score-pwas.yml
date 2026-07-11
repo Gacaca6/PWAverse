@@ -26,9 +26,13 @@ jobs:
         run: node scripts/score-pwas.mjs
       - name: Fetch icons for apps that lack one
         run: node scripts/fetch-icons.mjs
-      - name: Install Playwright Chromium
-        run: npx -y playwright@1 install --with-deps chromium
-      - name: Capture screenshots for apps that lack one
+      - name: Install Playwright (outside the repo — the site stays dependency-free)
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pw" playwright
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Build preview galleries for apps that lack one
+        env:
+          PLAYWRIGHT_DIR: ${{ runner.temp }}/pw
         run: node scripts/fetch-screenshots.mjs
       - name: Commit updated scores, icons, and screenshots
         run: |

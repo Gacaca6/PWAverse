@@ -57,7 +57,7 @@ Both big-name apps and small indie projects are welcome. Indie projects are espe
 | `iconLetter` | 1 character shown in the tile (usually the first letter) |
 | `iconColor` | hex color for the tile background — use the app's brand color |
 
-> **About icons & screenshots:** after your app is merged, a bot fetches its real icon from your app's own manifest and captures a mobile screenshot for its page in the directory — the letter tile is only the fallback. Ship a solid 192px+ icon in your manifest and a good-looking first screen, and that's what people will see. App owners can request icon or screenshot removal any time by opening an issue.
+> **About icons & previews:** after your app is merged, a bot fetches its real icon from your app's own manifest and builds an App Store-style preview gallery for its page in the directory — the letter tile is only the fallback. **You control your gallery:** if your manifest includes a [`screenshots` array](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/screenshots), those official images are used exactly as you chose them (portrait/narrow first). Otherwise the bot captures your app's landing view plus a couple of scrolled views at a phone viewport — so make that first screen count. App owners can request icon or preview removal any time by opening an issue.
 | `tags` | up to 4, lowercase-hyphenated (e.g. `offline`, `push-notifications`, `open-source`) |
 | `added` | today's date, `YYYY-MM-DD` |
 | `submittedBy` | your GitHub username |

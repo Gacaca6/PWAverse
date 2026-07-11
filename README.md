@@ -90,6 +90,7 @@ PWAverse is a fully static site — no build step, so any static host works:
 - [x] **v0.3** — Automated PWA checks: CI verifies each submitted app's manifest & service worker, plus a weekly link-rot sweep
 - [x] **v0.4** — PWA report cards: per-app grades for installability, offline support, and iOS friendliness, auto-refreshed weekly and displayed in the directory
 - [x] **v0.5** — Screenshots, richer app pages, and shareable per-app deep links (`#app/<id>`)
+- [x] **v0.6** — Store experience: dedicated per-app pages with App Store-style preview galleries (official manifest `screenshots` honored first, scrolling captures as fallback) and a report-card info strip
 - [ ] **v1.0** — Community moderation, ratings, and multi-language support
 
 Ideas welcome — [open an issue](https://github.com/Gacaca6/PWAverse/issues/new?template=feature_request.yml) and let's talk.

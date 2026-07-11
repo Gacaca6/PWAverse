@@ -55,7 +55,7 @@ const state = {
   scores: {},
   /** @type {Record<string, string>} */
   icons: {},
-  /** @type {Record<string, string>} */
+  /** @type {Record<string, string[]>} */
   screenshots: {},
 };
 
@@ -67,8 +67,7 @@ const els = {
   empty: /** @type {HTMLElement} */ (document.getElementById('empty-state')),
   offlineBadge: /** @type {HTMLElement} */ (document.getElementById('offline-badge')),
   installBtn: /** @type {HTMLButtonElement} */ (document.getElementById('install-btn')),
-  appDialog: /** @type {HTMLDialogElement} */ (document.getElementById('app-dialog')),
-  dialogBody: /** @type {HTMLElement} */ (document.getElementById('dialog-body')),
+  appPage: /** @type {HTMLElement} */ (document.getElementById('app-page')),
   iosDialog: /** @type {HTMLDialogElement} */ (document.getElementById('ios-dialog')),
 };
 
@@ -96,10 +95,14 @@ async function loadApps() {
 
     fetch('data/screenshots.json')
       .then((res) => res.json())
-      .then((/** @type {{ screenshots: Record<string, string> }} */ data) => {
-        state.screenshots = data.screenshots || {};
+      .then((/** @type {{ screenshots: Record<string, string | string[]> }} */ data) => {
+        // Tolerate the v0.5 single-string format (e.g. an offline-cached copy).
+        state.screenshots = {};
+        for (const [id, val] of Object.entries(data.screenshots || {})) {
+          state.screenshots[id] = Array.isArray(val) ? val : [val];
+        }
       })
-      .catch(() => { /* no screenshots — dialogs simply omit them */ }),
+      .catch(() => { /* no previews — app pages simply omit the gallery */ }),
   ];
 
   try {
@@ -109,9 +112,9 @@ async function loadApps() {
     state.categories = data.categories;
     renderChips();
     render();
-    // A deep-linked dialog should open fully dressed — wait for enrichments.
+    // A deep-linked app page should open fully dressed — wait for enrichments.
     await Promise.allSettled(enrichments);
-    openFromHash();
+    renderRoute();
   } catch (err) {
     els.grid.innerHTML = '';
     els.empty.hidden = false;
@@ -250,37 +253,150 @@ function render() {
     });
 
     card.append(top, desc, tags);
-    card.addEventListener('click', () => openAppDialog(app));
+    card.addEventListener('click', () => { location.hash = `app/${app.id}`; });
     els.grid.appendChild(card);
   });
 }
 
-/* --- App detail dialog -------------------------------------------------- */
+/* --- App pages (hash-routed: #app/<id>) ----------------------------------- */
+
+const DEFAULT_TITLE = document.title;
+
+/** Show the directory (default route). */
+function showDirectory() {
+  els.appPage.hidden = true;
+  els.appPage.innerHTML = '';
+  document.querySelectorAll('.directory-view').forEach((s) => {
+    /** @type {HTMLElement} */ (s).hidden = false;
+  });
+  document.title = DEFAULT_TITLE;
+}
 
 /**
- * Every app has a shareable deep link: <site>#app/<id>.
- * @param {App} app
- * @param {{ updateHash?: boolean }} [opts]
+ * App Store-style info strip: report-card grade plus the three dimensions,
+ * rendered as divided columns like a store listing's ratings bar.
+ * @param {Score} score
  */
-function openAppDialog(app, { updateHash = true } = {}) {
-  els.dialogBody.innerHTML = '';
+function infoStrip(score) {
+  const DIM_LABELS = { good: 'Good', ok: 'OK', poor: 'Weak', unknown: '?' };
+  const strip = document.createElement('div');
+  strip.className = 'info-strip';
+  const cells = /** @type {const} */ ([
+    ['Report card', score.grade, `grade-text-${score.grade === '?' ? 'unknown' : score.grade.toLowerCase()}`],
+    ['Installable', DIM_LABELS[score.installability], `dim-${score.installability}`],
+    ['Offline', DIM_LABELS[score.offline], `dim-${score.offline}`],
+    ['iOS ready', DIM_LABELS[score.ios], `dim-${score.ios}`],
+  ]);
+  for (const [label, value, cls] of cells) {
+    const cell = document.createElement('div');
+    cell.className = 'info-cell';
+    const l = document.createElement('span');
+    l.className = 'info-label';
+    l.textContent = label;
+    const v = document.createElement('span');
+    v.className = `info-value ${cls}`;
+    v.textContent = value;
+    cell.append(l, v);
+    strip.appendChild(cell);
+  }
+  return strip;
+}
 
-  const header = document.createElement('div');
-  header.className = 'dialog-app-header';
-  header.appendChild(appIcon(app));
+/**
+ * Copy-link / native-share button for an app's deep link.
+ * @param {App} app
+ */
+function shareButton(app) {
+  const link = `${location.origin}${location.pathname}#app/${app.id}`;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn btn-ghost';
+  btn.textContent = 'Share';
+  btn.addEventListener('click', async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${app.name} on PWAverse`, url: link });
+      } else {
+        await navigator.clipboard.writeText(link);
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+      }
+    } catch { /* user cancelled the share sheet — nothing to do */ }
+  });
+  return btn;
+}
 
-  const titleWrap = document.createElement('div');
-  const h2 = document.createElement('h2');
-  h2.id = 'dialog-title';
-  h2.textContent = app.name;
+/**
+ * Dedicated store-style page for one app: header with actions, info strip,
+ * preview gallery, and about section.
+ * @param {App} app
+ */
+function showAppPage(app) {
+  document.querySelectorAll('.directory-view').forEach((s) => {
+    /** @type {HTMLElement} */ (s).hidden = true;
+  });
+  const page = els.appPage;
+  page.innerHTML = '';
+
+  const back = document.createElement('a');
+  back.className = 'back-link';
+  back.href = '#';
+  back.textContent = '‹ All apps';
+  page.appendChild(back);
+
+  const header = document.createElement('header');
+  header.className = 'page-header';
+  header.appendChild(appIcon(app, 'page-icon'));
+  const headText = document.createElement('div');
+  headText.className = 'page-head-text';
+  const h1 = document.createElement('h1');
+  h1.textContent = app.name;
   const meta = document.createElement('p');
-  meta.textContent = `${app.category} · added ${app.added} · by ${app.submittedBy}`;
-  titleWrap.append(h2, meta);
-  header.appendChild(titleWrap);
+  meta.className = 'page-meta';
+  meta.textContent = `${app.category} · by ${app.submittedBy}`;
+  const actions = document.createElement('div');
+  actions.className = 'page-actions';
+  const launch = document.createElement('a');
+  launch.className = 'btn btn-primary';
+  launch.href = app.url;
+  launch.target = '_blank';
+  launch.rel = 'noopener';
+  launch.textContent = 'Open';
+  actions.append(launch, shareButton(app));
+  headText.append(h1, meta, actions);
+  header.appendChild(headText);
+  page.appendChild(header);
 
+  const score = state.scores[app.id];
+  if (score) page.appendChild(infoStrip(score));
+
+  const shots = state.screenshots[app.id] || [];
+  if (shots.length > 0) {
+    const title = document.createElement('h2');
+    title.className = 'page-section-title';
+    title.textContent = 'Preview';
+    const gallery = document.createElement('div');
+    gallery.className = 'preview-gallery';
+    shots.forEach((src, i) => {
+      const frame = document.createElement('div');
+      frame.className = 'shot';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `${app.name} preview ${i + 1}`;
+      img.decoding = 'async';
+      img.addEventListener('error', () => frame.remove());
+      frame.appendChild(img);
+      gallery.appendChild(frame);
+    });
+    page.append(title, gallery);
+  }
+
+  const aboutTitle = document.createElement('h2');
+  aboutTitle.className = 'page-section-title';
+  aboutTitle.textContent = 'About';
   const desc = document.createElement('p');
+  desc.className = 'page-about';
   desc.textContent = app.description;
-
   const tags = document.createElement('div');
   tags.className = 'app-tags';
   (app.tags || []).forEach((t) => {
@@ -289,128 +405,34 @@ function openAppDialog(app, { updateHash = true } = {}) {
     tag.textContent = t;
     tags.appendChild(tag);
   });
-
-  const launch = document.createElement('a');
-  launch.className = 'btn btn-primary dialog-launch';
-  launch.href = app.url;
-  launch.target = '_blank';
-  launch.rel = 'noopener';
-  launch.textContent = `Launch ${app.name} →`;
-
-  els.dialogBody.append(header);
-
-  const shotPath = state.screenshots[app.id];
-  if (shotPath) {
-    const frame = document.createElement('div');
-    frame.className = 'dialog-screenshot';
-    const img = document.createElement('img');
-    img.src = shotPath;
-    img.alt = `Screenshot of ${app.name}`;
-    // no loading="lazy" here: lazy images inside a modal <dialog> never load
-    // in Chrome, and the screenshot is wanted immediately anyway
-    img.addEventListener('error', () => frame.remove());
-    frame.appendChild(img);
-    els.dialogBody.append(frame);
-  }
-
-  els.dialogBody.append(desc, tags);
-  const score = state.scores[app.id];
-  if (score) els.dialogBody.append(reportCard(score));
-  els.dialogBody.append(launch, shareRow(app));
-
-  if (updateHash) history.replaceState(null, '', `#app/${app.id}`);
-  els.appDialog.showModal();
-}
-
-/**
- * Copy-link / native-share row for an app's deep link.
- * @param {App} app
- */
-function shareRow(app) {
-  const link = `${location.origin}${location.pathname}#app/${app.id}`;
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'btn btn-ghost dialog-share';
-  btn.textContent = '🔗 Share this app';
-  btn.addEventListener('click', async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: `${app.name} on PWAverse`, url: link });
-      } else {
-        await navigator.clipboard.writeText(link);
-        btn.textContent = '✓ Link copied!';
-        setTimeout(() => { btn.textContent = '🔗 Share this app'; }, 2000);
-      }
-    } catch { /* user cancelled the share sheet — nothing to do */ }
-  });
-  return btn;
-}
-
-function onAppDialogClosed() {
-  if (location.hash.startsWith('#app/')) {
-    history.replaceState(null, '', location.pathname + location.search);
-  }
-}
-els.appDialog.addEventListener('close', onAppDialogClosed);
-// Some Chromium builds deliver toggle but not close for <dialog> — cover both.
-els.appDialog.addEventListener('toggle', (e) => {
-  const toggle = /** @type {Event & { newState?: string }} */ (e);
-  if (toggle.newState === 'closed') onAppDialogClosed();
-});
-
-/** Open the dialog for the app named in the URL hash, if any. */
-function openFromHash() {
-  const m = location.hash.match(/^#app\/(.+)$/);
-  if (!m) return;
-  const app = state.apps.find((a) => a.id === decodeURIComponent(m[1]));
-  if (app) openAppDialog(app, { updateHash: false });
-}
-
-window.addEventListener('hashchange', () => {
-  if (location.hash.startsWith('#app/')) openFromHash();
-  else if (els.appDialog.open) els.appDialog.close();
-});
-
-/**
- * The per-app "PWA report card" panel shown in the detail dialog.
- * @param {Score} score
- */
-function reportCard(score) {
-  const DIM_LABELS = { good: 'Good', ok: 'OK', poor: 'Weak', unknown: 'Unverified' };
-  const wrap = document.createElement('div');
-  wrap.className = 'report-card';
-
-  const head = document.createElement('div');
-  head.className = 'report-head';
-  const title = document.createElement('span');
-  title.textContent = 'PWA report card';
-  head.append(title, gradeBadge(score));
-  wrap.appendChild(head);
-
-  const rows = /** @type {const} */ ([
-    ['Installability', score.installability],
-    ['Offline ready', score.offline],
-    ['iOS friendly', score.ios],
-  ]);
-  for (const [label, dim] of rows) {
-    const row = document.createElement('div');
-    row.className = 'report-row';
-    const name = document.createElement('span');
-    name.textContent = label;
-    const value = document.createElement('span');
-    value.className = `dim dim-${dim}`;
-    value.textContent = DIM_LABELS[dim];
-    row.append(name, value);
-    wrap.appendChild(row);
-  }
+  page.append(aboutTitle, desc, tags);
 
   const note = document.createElement('p');
   note.className = 'report-note';
-  note.textContent = `Automated check · ${score.checked} · "Unverified" means the site hides this from robots — not that it's missing.`;
-  wrap.appendChild(note);
+  note.textContent = score
+    ? `Added ${app.added} · automated report card checked ${score.checked} · "?" means the site hides this from robots — not that it's missing.`
+    : `Added ${app.added}.`;
+  page.appendChild(note);
 
-  return wrap;
+  page.hidden = false;
+  document.title = `${app.name} — PWAverse`;
+  window.scrollTo(0, 0);
 }
+
+/** Route on the URL hash: #app/<id> shows that app's page, anything else the directory. */
+function renderRoute() {
+  const m = location.hash.match(/^#app\/(.+)$/);
+  if (m) {
+    const app = state.apps.find((a) => a.id === decodeURIComponent(m[1]));
+    if (app) {
+      showAppPage(app);
+      return;
+    }
+  }
+  showDirectory();
+}
+
+window.addEventListener('hashchange', renderRoute);
 
 /* --- Search --------------------------------------------------------------- */
 

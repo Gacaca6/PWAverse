@@ -1,22 +1,71 @@
 {
   "generated": "2026-07-11",
   "screenshots": {
-    "excalidraw": "screenshots/excalidraw.png",
-    "hano-bus": "screenshots/hano-bus.png",
-    "kina-wige": "screenshots/kina-wige.png",
-    "monkeytype": "screenshots/monkeytype.png",
-    "musi-me": "screenshots/musi-me.png",
-    "photopea": "screenshots/photopea.png",
-    "pinterest": "screenshots/pinterest.png",
-    "poetry-assistant": "screenshots/poetry-assistant.png",
-    "spotify-web": "screenshots/spotify-web.png",
-    "squoosh": "screenshots/squoosh.png",
-    "starbucks": "screenshots/starbucks.png",
-    "telegram-web": "screenshots/telegram-web.png",
-    "tweetforge": "screenshots/tweetforge.png",
-    "uber": "screenshots/uber.png",
-    "vscode-dev": "screenshots/vscode-dev.png",
-    "wayfind": "screenshots/wayfind.png",
-    "x-twitter": "screenshots/x-twitter.png"
+    "excalidraw": [
+      "screenshots/excalidraw-1.png",
+      "screenshots/excalidraw-2.png",
+      "screenshots/excalidraw-3.png",
+      "screenshots/excalidraw-4.png"
+    ],
+    "hano-bus": [
+      "screenshots/hano-bus-1.jpg"
+    ],
+    "kina-wige": [
+      "screenshots/kina-wige-1.jpg"
+    ],
+    "monkeytype": [
+      "screenshots/monkeytype-1.jpg",
+      "screenshots/monkeytype-2.jpg"
+    ],
+    "musi-me": [
+      "screenshots/musi-me-1.jpg"
+    ],
+    "photopea": [
+      "screenshots/photopea-1.jpg",
+      "screenshots/photopea-2.jpg",
+      "screenshots/photopea-3.jpg"
+    ],
+    "pinterest": [
+      "screenshots/pinterest-1.jpg",
+      "screenshots/pinterest-2.jpg",
+      "screenshots/pinterest-3.jpg"
+    ],
+    "poetry-assistant": [
+      "screenshots/poetry-assistant-1.jpg"
+    ],
+    "spotify-web": [
+      "screenshots/spotify-web-1.jpg"
+    ],
+    "squoosh": [
+      "screenshots/squoosh-1.png",
+      "screenshots/squoosh-2.jpg",
+      "screenshots/squoosh-3.jpg",
+      "screenshots/squoosh-4.png"
+    ],
+    "starbucks": [
+      "screenshots/starbucks-1.jpg",
+      "screenshots/starbucks-2.jpg",
+      "screenshots/starbucks-3.jpg"
+    ],
+    "telegram-web": [
+      "screenshots/telegram-web-1.jpg"
+    ],
+    "tweetforge": [
+      "screenshots/tweetforge-1.jpg",
+      "screenshots/tweetforge-2.jpg",
+      "screenshots/tweetforge-3.jpg"
+    ],
+    "uber": [
+      "screenshots/uber-1.jpg"
+    ],
+    "vscode-dev": [
+      "screenshots/vscode-dev-1.jpg"
+    ],
+    "wayfind": [
+      "screenshots/wayfind-1.jpg"
+    ],
+    "x-twitter": [
+      "screenshots/x-twitter-1.jpg"
+    ]
   }
 }
