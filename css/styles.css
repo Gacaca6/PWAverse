@@ -510,3 +510,28 @@ a { color: var(--accent); }
   * { transition: none !important; animation: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* --- Dialog screenshot + share (v0.5) --------------------------------------- */
+
+.dialog-screenshot {
+  margin: 4px 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  max-height: 340px;
+  background: var(--bg-soft);
+}
+
+.dialog-screenshot img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: top;
+  max-height: 340px;
+}
+
+.dialog-share {
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}

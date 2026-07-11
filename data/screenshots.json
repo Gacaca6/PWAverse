@@ -1,0 +1,22 @@
+{
+  "generated": "2026-07-11",
+  "screenshots": {
+    "excalidraw": "screenshots/excalidraw.png",
+    "hano-bus": "screenshots/hano-bus.png",
+    "kina-wige": "screenshots/kina-wige.png",
+    "monkeytype": "screenshots/monkeytype.png",
+    "musi-me": "screenshots/musi-me.png",
+    "photopea": "screenshots/photopea.png",
+    "pinterest": "screenshots/pinterest.png",
+    "poetry-assistant": "screenshots/poetry-assistant.png",
+    "spotify-web": "screenshots/spotify-web.png",
+    "squoosh": "screenshots/squoosh.png",
+    "starbucks": "screenshots/starbucks.png",
+    "telegram-web": "screenshots/telegram-web.png",
+    "tweetforge": "screenshots/tweetforge.png",
+    "uber": "screenshots/uber.png",
+    "vscode-dev": "screenshots/vscode-dev.png",
+    "wayfind": "screenshots/wayfind.png",
+    "x-twitter": "screenshots/x-twitter.png"
+  }
+}

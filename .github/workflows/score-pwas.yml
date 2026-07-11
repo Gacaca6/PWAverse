@@ -26,14 +26,18 @@ jobs:
         run: node scripts/score-pwas.mjs
       - name: Fetch icons for apps that lack one
         run: node scripts/fetch-icons.mjs
-      - name: Commit updated scores and icons
+      - name: Install Playwright Chromium
+        run: npx -y playwright@1 install --with-deps chromium
+      - name: Capture screenshots for apps that lack one
+        run: node scripts/fetch-screenshots.mjs
+      - name: Commit updated scores, icons, and screenshots
         run: |
-          git add data/scores.json data/icons.json icons/apps
+          git add data/scores.json data/icons.json data/screenshots.json icons/apps screenshots
           if git diff --cached --quiet; then
-            echo "Scores and icons unchanged — nothing to commit."
+            echo "Scores, icons, and screenshots unchanged — nothing to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: refresh PWA report cards and icons [automated]"
+          git commit -m "chore: refresh PWA report cards, icons, and screenshots [automated]"
           git push

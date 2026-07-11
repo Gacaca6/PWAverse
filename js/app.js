@@ -55,6 +55,8 @@ const state = {
   scores: {},
   /** @type {Record<string, string>} */
   icons: {},
+  /** @type {Record<string, string>} */
+  screenshots: {},
 };
 
 const els = {
@@ -73,22 +75,32 @@ const els = {
 /* --- Data loading ---------------------------------------------------- */
 
 async function loadApps() {
-  // Report cards and real icons are optional enrichment — never block on them.
-  fetch('data/scores.json')
-    .then((res) => res.json())
-    .then((/** @type {{ scores: Record<string, Score> }} */ data) => {
-      state.scores = data.scores || {};
-      render();
-    })
-    .catch(() => { /* no scores available — directory works without them */ });
+  // Report cards, real icons, and screenshots are optional enrichment —
+  // the grid renders as each arrives, and never blocks on them.
+  const enrichments = [
+    fetch('data/scores.json')
+      .then((res) => res.json())
+      .then((/** @type {{ scores: Record<string, Score> }} */ data) => {
+        state.scores = data.scores || {};
+        render();
+      })
+      .catch(() => { /* no scores available — directory works without them */ }),
 
-  fetch('data/icons.json')
-    .then((res) => res.json())
-    .then((/** @type {{ icons: Record<string, string> }} */ data) => {
-      state.icons = data.icons || {};
-      render();
-    })
-    .catch(() => { /* no icons available — letter tiles work fine */ });
+    fetch('data/icons.json')
+      .then((res) => res.json())
+      .then((/** @type {{ icons: Record<string, string> }} */ data) => {
+        state.icons = data.icons || {};
+        render();
+      })
+      .catch(() => { /* no icons available — letter tiles work fine */ }),
+
+    fetch('data/screenshots.json')
+      .then((res) => res.json())
+      .then((/** @type {{ screenshots: Record<string, string> }} */ data) => {
+        state.screenshots = data.screenshots || {};
+      })
+      .catch(() => { /* no screenshots — dialogs simply omit them */ }),
+  ];
 
   try {
     const res = await fetch('data/apps.json');
@@ -97,6 +109,9 @@ async function loadApps() {
     state.categories = data.categories;
     renderChips();
     render();
+    // A deep-linked dialog should open fully dressed — wait for enrichments.
+    await Promise.allSettled(enrichments);
+    openFromHash();
   } catch (err) {
     els.grid.innerHTML = '';
     els.empty.hidden = false;
@@ -242,8 +257,12 @@ function render() {
 
 /* --- App detail dialog -------------------------------------------------- */
 
-/** @param {App} app */
-function openAppDialog(app) {
+/**
+ * Every app has a shareable deep link: <site>#app/<id>.
+ * @param {App} app
+ * @param {{ updateHash?: boolean }} [opts]
+ */
+function openAppDialog(app, { updateHash = true } = {}) {
   els.dialogBody.innerHTML = '';
 
   const header = document.createElement('div');
@@ -255,7 +274,7 @@ function openAppDialog(app) {
   h2.id = 'dialog-title';
   h2.textContent = app.name;
   const meta = document.createElement('p');
-  meta.textContent = `${app.category} · added ${app.added}`;
+  meta.textContent = `${app.category} · added ${app.added} · by ${app.submittedBy}`;
   titleWrap.append(h2, meta);
   header.appendChild(titleWrap);
 
@@ -278,12 +297,79 @@ function openAppDialog(app) {
   launch.rel = 'noopener';
   launch.textContent = `Launch ${app.name} →`;
 
-  els.dialogBody.append(header, desc, tags);
+  els.dialogBody.append(header);
+
+  const shotPath = state.screenshots[app.id];
+  if (shotPath) {
+    const frame = document.createElement('div');
+    frame.className = 'dialog-screenshot';
+    const img = document.createElement('img');
+    img.src = shotPath;
+    img.alt = `Screenshot of ${app.name}`;
+    // no loading="lazy" here: lazy images inside a modal <dialog> never load
+    // in Chrome, and the screenshot is wanted immediately anyway
+    img.addEventListener('error', () => frame.remove());
+    frame.appendChild(img);
+    els.dialogBody.append(frame);
+  }
+
+  els.dialogBody.append(desc, tags);
   const score = state.scores[app.id];
   if (score) els.dialogBody.append(reportCard(score));
-  els.dialogBody.append(launch);
+  els.dialogBody.append(launch, shareRow(app));
+
+  if (updateHash) history.replaceState(null, '', `#app/${app.id}`);
   els.appDialog.showModal();
 }
+
+/**
+ * Copy-link / native-share row for an app's deep link.
+ * @param {App} app
+ */
+function shareRow(app) {
+  const link = `${location.origin}${location.pathname}#app/${app.id}`;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn btn-ghost dialog-share';
+  btn.textContent = '🔗 Share this app';
+  btn.addEventListener('click', async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${app.name} on PWAverse`, url: link });
+      } else {
+        await navigator.clipboard.writeText(link);
+        btn.textContent = '✓ Link copied!';
+        setTimeout(() => { btn.textContent = '🔗 Share this app'; }, 2000);
+      }
+    } catch { /* user cancelled the share sheet — nothing to do */ }
+  });
+  return btn;
+}
+
+function onAppDialogClosed() {
+  if (location.hash.startsWith('#app/')) {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+}
+els.appDialog.addEventListener('close', onAppDialogClosed);
+// Some Chromium builds deliver toggle but not close for <dialog> — cover both.
+els.appDialog.addEventListener('toggle', (e) => {
+  const toggle = /** @type {Event & { newState?: string }} */ (e);
+  if (toggle.newState === 'closed') onAppDialogClosed();
+});
+
+/** Open the dialog for the app named in the URL hash, if any. */
+function openFromHash() {
+  const m = location.hash.match(/^#app\/(.+)$/);
+  if (!m) return;
+  const app = state.apps.find((a) => a.id === decodeURIComponent(m[1]));
+  if (app) openAppDialog(app, { updateHash: false });
+}
+
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#app/')) openFromHash();
+  else if (els.appDialog.open) els.appDialog.close();
+});
 
 /**
  * The per-app "PWA report card" panel shown in the detail dialog.
