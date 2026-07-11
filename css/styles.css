@@ -47,6 +47,9 @@ body {
   color: var(--text);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  /* The page must never pan sideways — anything wide scrolls inside its own
+     container (preview gallery, info strip), not the body. */
+  overflow-x: clip;
 }
 
 .container {
@@ -525,17 +528,13 @@ a { color: var(--accent); }
   .header-actions { gap: 6px; }
   .header-actions .btn { padding: 7px 12px; font-size: 0.82rem; }
 
-  /* Cards: two tidy columns, nothing colliding */
-  .app-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .app-card { padding: 12px; gap: 10px; }
-  .app-card p.app-desc { display: none; }
-  .app-card-top { gap: 8px; }
-  .app-card .app-icon { width: 40px; height: 40px; border-radius: 10px; font-size: 1.15rem; }
-  .app-card h3 { font-size: 0.92rem; }
-  .app-card .app-category { font-size: 0.72rem; }
-  .app-card .grade-badge { min-width: 22px; height: 22px; font-size: 0.72rem; border-radius: 7px; }
-  .tag { font-size: 0.66rem; padding: 2px 8px; }
-  .app-card .tag:nth-child(n + 3) { display: none; }
+  /* Cards: one per row, store-style — every app fully visible, no panning */
+  .app-grid { grid-template-columns: 1fr; gap: 10px; }
+  .app-card { padding: 14px 16px; gap: 8px; }
+  .app-card p.app-desc { font-size: 0.84rem; }
+  .app-card .app-icon { width: 52px; height: 52px; border-radius: 13px; font-size: 1.4rem; }
+  .app-card h3 { font-size: 1rem; }
+  .tag { font-size: 0.68rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
