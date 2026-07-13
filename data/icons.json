@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10",
+  "generated": "2026-07-13",
   "icons": {
     "excalidraw": "icons/apps/excalidraw.png",
     "hano-bus": "icons/apps/hano-bus.png",
@@ -11,6 +11,8 @@
     "poetry-assistant": "icons/apps/poetry-assistant.png",
     "spotify-web": "icons/apps/spotify-web.png",
     "squoosh": "icons/apps/squoosh.png",
+    "starbucks": "icons/apps/starbucks.png",
+    "svgomg": "icons/apps/svgomg.png",
     "telegram-web": "icons/apps/telegram-web.png",
     "tweetforge": "icons/apps/tweetforge.png",
     "uber": "icons/apps/uber.png",
