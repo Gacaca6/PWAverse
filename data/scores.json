@@ -1,131 +1,131 @@
 {
-  "generated": "2026-08-03",
+  "generated": "2026-08-10",
   "scores": {
     "excalidraw": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "hano-bus": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "kina-wige": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "monkeytype": {
       "installability": "good",
       "offline": "good",
       "ios": "ok",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "musi-me": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "photopea": {
       "installability": "good",
       "offline": "unknown",
       "ios": "good",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "pinterest": {
       "installability": "good",
       "offline": "unknown",
       "ios": "good",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "poetry-assistant": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "spotify-web": {
       "installability": "good",
       "offline": "unknown",
       "ios": "poor",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "squoosh": {
       "installability": "good",
       "offline": "unknown",
       "ios": "good",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "starbucks": {
       "installability": "ok",
       "offline": "unknown",
       "ios": "good",
       "grade": "C",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "svgomg": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "telegram-web": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "tweetforge": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "uber": {
       "installability": "good",
       "offline": "unknown",
       "ios": "ok",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "vscode-dev": {
       "installability": "unknown",
       "offline": "good",
       "ios": "poor",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "wayfind": {
       "installability": "good",
       "offline": "good",
       "ios": "good",
       "grade": "A",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     },
     "x-twitter": {
       "installability": "good",
       "offline": "unknown",
       "ios": "ok",
       "grade": "B",
-      "checked": "2026-08-03"
+      "checked": "2026-08-10"
     }
   }
 }
