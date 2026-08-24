@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-17",
+  "generated": "2026-08-24",
   "icons": {
     "excalidraw": "icons/apps/excalidraw.png",
     "hano-bus": "icons/apps/hano-bus.png",
@@ -16,6 +16,7 @@
     "telegram-web": "icons/apps/telegram-web.png",
     "tweetforge": "icons/apps/tweetforge.png",
     "uber": "icons/apps/uber.png",
-    "wayfind": "icons/apps/wayfind.png"
+    "wayfind": "icons/apps/wayfind.png",
+    "x-twitter": "icons/apps/x-twitter.png"
   }
 }
